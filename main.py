@@ -13,6 +13,9 @@ import os
 app = Flask(__name__)
 # app.secret_key = os.getenv("secret_key")  
 
+
+#Páginas de login
+
 @app.route('/login')
 def login():
     return render_template('session/login.html')
@@ -24,6 +27,15 @@ def forgot_password():
 @app.route('/register')
 def register():
     return render_template('session/register.html')
+
+#Páginas da Dashboard (pós-login apenas)
+
+@app.route('/users')
+def users():
+    return render_template('it_dash/users.html')
+
+
+#Erros
 
 @app.errorhandler(404)
 def page_not_found(e):
