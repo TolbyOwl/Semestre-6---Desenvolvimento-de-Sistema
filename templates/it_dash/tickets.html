@@ -1,0 +1,94 @@
+{% extends "it_dash/basic_dash.html" %}
+{% block title %} Tickets{% endblock %}
+{% block content %}
+
+        <div class="container-fluid px-3 px-lg-4 py-4">
+          <div class="page-heading">
+            <div class="page-heading-copy">
+              <span class="page-icon"><i class="bi bi-speedometer2" aria-hidden="true"></i></span>
+              <div>
+                <p class="eyebrow mb-1">Atendimento</p>
+                <h1 class="h3 mb-1">Dashboard</h1>
+                <p class="text-muted mb-0">Fluxo de suporte por etapa.</p>
+              </div>
+            </div>
+            <div class="heading-actions"><a class="btn btn-primary btn-sm" href="{{url_for("new_ticket")}}" ><i class="bi bi-file-earmark-plus" aria-hidden="true"></i> Novo Chamado</a></div>
+          </div>
+
+      
+          <section class="row g-3 mt-1">
+          <!-- Lista 1- Novo  -->
+            <div class="col-12 col-xl-4">
+              <div class="panel h-100">
+                <div class="panel-header">
+                  <div>
+                    <h2 class="h5 mb-1 section-title"><i class="bi bi-activity" aria-hidden="true"></i><span>Novos</span></h2>
+                    <p class="text-muted mb-0">Chamados novos em aberto.</p>
+                  </div>
+                </div>
+
+                <div class="activity-list">
+                  <div class="activity-item"><span class="activity-dot bg-primary"></span><div><p class="mb-1 fw-semibold">New campaign launched</p><p class="text-muted small mb-0">Marketing team published the May offer.</p></div></div>
+                  <div class="activity-item"><span class="activity-dot bg-success"></span><div><p class="mb-1 fw-semibold">Payment batch cleared</p><p class="text-muted small mb-0">246 invoices were processed successfully.</p></div></div>
+                  <div class="activity-item"><span class="activity-dot bg-warning"></span><div><p class="mb-1 fw-semibold">Support queue rising</p><p class="text-muted small mb-0">Average first response time is 18 minutes.</p></div></div>
+                </div>
+              </div>
+            </div>
+          <!-- Lista 2 - Em andamento -->
+            <div class="col-12 col-xl-4">
+              <div class="panel h-100">
+                <div class="panel-header">
+                  <div>
+                    <h2 class="h5 mb-1 section-title"><i class="bi bi-activity" aria-hidden="true"></i><span>Em andamento</span></h2>
+                    <p class="text-muted mb-0">Chamados em andamento.</p>
+                  </div>
+                </div>
+
+                <div class="activity-list">
+                  <div class="activity-item"><span class="activity-dot bg-primary"></span><div><p class="mb-1 fw-semibold">New campaign launched</p><p class="text-muted small mb-0">Marketing team published the May offer.</p></div></div>
+                  <div class="activity-item"><span class="activity-dot bg-success"></span><div><p class="mb-1 fw-semibold">Payment batch cleared</p><p class="text-muted small mb-0">246 invoices were processed successfully.</p></div></div>
+                  <div class="activity-item"><span class="activity-dot bg-warning"></span><div><p class="mb-1 fw-semibold">Support queue rising</p><p class="text-muted small mb-0">Average first response time is 18 minutes.</p></div></div>
+                </div>
+              </div>
+            </div>
+          <!-- Lista 3 - Aguardando Cliente-->
+            <div class="col-12 col-xl-4">
+              <div class="panel h-100">
+                <div class="panel-header">
+                  <div>
+                    <h2 class="h5 mb-1 section-title"><i class="bi bi-activity" aria-hidden="true"></i><span>Aguardando Cliente</span></h2>
+                    <p class="text-muted mb-0">Aguardando resposta do cliente.</p>
+                  </div>
+                </div>
+
+                <div class="activity-list">
+                  <div class="activity-item"><span class="activity-dot bg-primary"></span><div><p class="mb-1 fw-semibold">New campaign launched</p><p class="text-muted small mb-0">Marketing team published the May offer.</p></div></div>
+                  <div class="activity-item"><span class="activity-dot bg-success"></span><div><p class="mb-1 fw-semibold">Payment batch cleared</p><p class="text-muted small mb-0">246 invoices were processed successfully.</p></div></div>
+                  <div class="activity-item"><span class="activity-dot bg-warning"></span><div><p class="mb-1 fw-semibold">Support queue rising</p><p class="text-muted small mb-0">Average first response time is 18 minutes.</p></div></div>
+                </div>
+              </div>
+            </div>
+          <!-- Lista 4 - Resolvido -->
+            <div class="col-12 col-xl-4">
+              <div class="panel h-100">
+                <div class="panel-header">
+                  <div>
+                    <h2 class="h5 mb-1 section-title"><i class="bi bi-activity" aria-hidden="true"></i><span>Resolvidos</span></h2>
+                    <p class="text-muted mb-0">Chamados resolvidos.</p>
+                  </div>
+                </div>
+
+                <div class="activity-list">
+                  <div class="activity-item"><span class="activity-dot bg-primary"></span><div><p class="mb-1 fw-semibold">New campaign launched</p><p class="text-muted small mb-0">Marketing team published the May offer.</p></div></div>
+                  <div class="activity-item"><span class="activity-dot bg-success"></span><div><p class="mb-1 fw-semibold">Payment batch cleared</p><p class="text-muted small mb-0">246 invoices were processed successfully.</p></div></div>
+                  <div class="activity-item"><span class="activity-dot bg-warning"></span><div><p class="mb-1 fw-semibold">Support queue rising</p><p class="text-muted small mb-0">Average first response time is 18 minutes.</p></div></div>
+                </div>
+              </div>
+            </div>
+
+          </section>
+        </div>
+    
+
+
+{% endblock content %}
