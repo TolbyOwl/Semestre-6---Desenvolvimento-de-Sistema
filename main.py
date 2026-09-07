@@ -34,6 +34,22 @@ def register():
 def users():
     return render_template('it_dash/users.html')
 
+@app.route('/dash')
+def dash():
+    return render_template('it_dash/dash.html')
+
+
+@app.route('/new_ticket')
+def new_ticket():
+    return render_template('it_dash/new_ticket.html')
+
+@app.route('/tickets')
+def tickets():
+    return render_template('it_dash/tickets.html')
+
+@app.route('/config')
+def config():
+    return render_template('it_dash/config.html')
 
 #Erros
 
