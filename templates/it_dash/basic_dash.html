@@ -9,6 +9,15 @@
   <link rel="stylesheet" href="static\css\bootstrap.min.css">
   <link rel="stylesheet" href="static\vendors\bootstrap-icons\bootstrap-icons.css">
   <link rel="stylesheet" href="static\css\style.css">
+
+  <script src="static\js\bootstrap.bundle.min.js"></script>
+
+  {% if request.endpoint == 'new_document' %}
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <link href="static\css\summernote-bs5.css" rel="stylesheet">
+  <script src="static\js\summernote-bs5.js"></script>
+  {% endif %}
+
 </head>
 
 <body>
@@ -79,25 +88,21 @@
           <span class="nav-text">Modals</span>
         </a> -->
 
-        <a class="nav-link {% if request.endpoint in ['config', 'config'] %}active{% endif %}"
+        <a class="nav-link {% if request.endpoint in ['config'] %} active {% endif %}"
            href="{{url_for("config")}}"
-           {% if request.endpoint in ['tickets', 'config'] %}aria-current="page"{% endif %}>
+           {% if request.endpoint in ['config'] %}aria-current="page"{% endif %}>
           <span class="nav-icon"><i class="bi bi-gear" aria-hidden="true"></i></span>
           <span class="nav-text">Config</span>
         </a>
 
-        <a class="nav-link" href="blank.html">
+        <a class="nav-link{% if request.endpoint in ['documents', 'new_document'] %} active {% endif %}"
+           href="{{url_for("documents")}}"
+           {% if request.endpoint in ['documents', 'new_document'] %}aria-current="page"{% endif %}>
           <span class="nav-icon"><i class="bi bi-file-earmark" aria-hidden="true"></i></span>
-          <span class="nav-text">Blank Page</span>
+          <span class="nav-text">Documentação</span>
         </a>
 
       </nav>
-
-      <div class="sidebar-user">
-        <img class="avatar-img avatar-md sidebar-user-avatar" src="../assets/images/avatar/avatar.jpg" alt="Admin Hasan">
-        <strong>Admin Hasan</strong>
-        <small>Active Workspace</small>
-      </div>
 
       <div class="sidebar-footer">
         <span class="status-dot"></span>
@@ -175,9 +180,9 @@
 
                 <img class="avatar-img avatar-sm"
                      src="../assets/images/avatar/avatar.jpg"
-                     alt="Admin Hasan">
+                     alt="">
 
-                <span class="profile-name d-none d-sm-inline">Admin Hasan</span>
+                <span class="profile-name d-none d-sm-inline">Olá, {{ username }}!</span>
               </button>
 
               <ul class="dropdown-menu dropdown-menu-end">
@@ -223,7 +228,33 @@
     </div>
   </div>
 
-  <script src="static\js\bootstrap.bundle.min.js"></script>
   <script src="static\js\main.js"></script>
+
+  <!-- {% if request.endpoint in ['new_document'] %}     
+    <script>
+      $('#summernote').summernote({
+        lang: 'pt-BR',
+        placeholder: 'Pronto para digitar...',
+        tabsize: 2,
+        height: 650,
+        minHeight:null,
+        maxHeight: null,
+      });
+    </script> 
+  {% endif %} -->
+  {% if request.endpoint == 'new_document' %}
+  <script>
+    $(function () {
+      $('#summernote').summernote({
+        lang: 'pt-BR',
+        placeholder: 'Pronto para digitar...',
+        tabsize: 2,
+        height: 400,
+        minHeight: null,
+        maxHeight: null
+      });
+    });
+  </script>
+{% endif %}
 </body>
 </html>

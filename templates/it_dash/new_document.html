@@ -1,0 +1,53 @@
+{% extends "it_dash/basic_dash.html" %} 
+{% block title %} Novo documento {% endblock %} 
+{% block content %}
+<div class="container-fluid px-3 px-lg-4 py-4">
+  <div class="page-heading">
+    <div class="page-heading-copy">
+      <span class="page-icon"
+        ><i class="bi bi-ui-checks-grid" aria-hidden="true"></i
+      ></span>
+      <div>
+        <h1 class="h3 mb-1">Novo documento</h1>
+        <p class="text-muted mb-0">xxxxxxxxxxxxxxxxxxxxx.</p>
+      </div>
+    </div>
+  </div>
+
+  <section class="row g-3">
+    <div class="col-12">
+      <form class="panel needs-validation" novalidate>
+        <div class="panel-header">
+          <div>
+            <h2 class="h5 mb-1 section-title">
+              <i class="bi bi-ui-checks-grid" aria-hidden="true"></i
+              ><span>Novo chamado</span>
+            </h2>
+          </div>
+        </div>
+         <div class="col-md-12">
+            <label class="form-label" for="titleTicket">Titulo do chamado</label
+            ><input class="form-control" id="titleTicket" required />
+            <div class="invalid-feedback">Titulo</div>
+          </div>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label" for="formName">Tag</label
+            ><input class="form-control" id="formName" required />
+            <div class="invalid-feedback">Nome completo requerido.</div>
+          </div>
+          <div class="col-12">
+            <textarea id="summernote" name="editordata"></textarea>
+            <!-- <div class="invalid-feedback">Descrição requerida.</div> -->
+          </div>
+        </div>
+        <div class="d-flex justify-content-end mt-4">
+          <button class="btn btn-primary" type="submit">
+            <i class="bi bi-send" aria-hidden="true"></i> Submit Form
+          </button>
+        </div>
+      </form>
+    </div>
+  </section>
+</div>
+{% endblock content %}
