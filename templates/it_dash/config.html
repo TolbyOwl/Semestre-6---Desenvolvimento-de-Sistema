@@ -9,11 +9,10 @@
           ><i class="bi bi-gear" aria-hidden="true"></i
         ></span>
         <div>
-          <p class="eyebrow mb-1">Workspace</p>
-          <h1 class="h3 mb-1">Settings</h1>
+          <p class="eyebrow mb-1"></p>
+          <h1 class="h3 mb-1">Configuração</h1>
           <p class="text-muted mb-0">
-            Customize workspace defaults, security options, and notification
-            preferences.
+            Personalize os padrões do espaço de trabalho, as opções de segurança e as preferências de notificação.
           </p>
         </div>
       </div>
@@ -26,15 +25,15 @@
             <div>
               <h2 class="h5 mb-1 section-title">
                 <i class="bi bi-sliders" aria-hidden="true"></i
-                ><span>General Settings</span>
+                ><span>Configuração Geral</span>
               </h2>
               <p class="text-muted mb-0">
-                Configure workspace identity and defaults.
+                Configure a identidade e os padrões do espaço de trabalho.
               </p>
             </div>
           </div>
           <div class="mb-3">
-            <label class="form-label" for="workspaceName">Workspace name</label
+            <label class="form-label" for="workspaceName">Nome do espaço de trabalho</label
             ><input
               class="form-control"
               id="workspaceName"
@@ -42,19 +41,19 @@
               value="adminHMD Workspace"
               required
             />
-            <div class="invalid-feedback">Workspace name is required.</div>
+            <div class="invalid-feedback">O nome do espaço de trabalho é obrigatório.</div>
           </div>
           <div class="mb-3">
             <label class="form-label" for="defaultLanguage"
-              >Default language</label
+              >Idioma padrão</label
             ><select class="form-select" id="defaultLanguage">
-              <option selected>English</option>
-              <option>Bangla</option>
-              <option>Spanish</option>
+              <option selected>Inglês</option>
+              <option>Português</option>
+              <option>Espanhol</option>
             </select>
           </div>
           <button class="btn btn-primary" type="submit">
-            <i class="bi bi-check2-circle" aria-hidden="true"></i> Save Settings
+            <i class="bi bi-check2-circle" aria-hidden="true"></i> Salvar configuração
           </button>
         </form>
       </div>
@@ -64,30 +63,30 @@
             <div>
               <h2 class="h5 mb-1 section-title">
                 <i class="bi bi-toggles2" aria-hidden="true"></i
-                ><span>Preferences</span>
+                ><span>preferências</span>
               </h2>
               <p class="text-muted mb-0">
-                Control notifications and security options.
+                Gerencie notificações e opções de segurança.
               </p>
             </div>
           </div>
           <div class="settings-list">
             <label class="settings-row"
               ><span
-                ><strong>Email alerts</strong
-                ><small>Receive important account updates.</small></span
+                ><strong>Alertas por e-mail</strong
+                ><small>Receba atualizações importantes da conta.</small></span
               ><input class="form-check-input" type="checkbox" checked
             /></label>
             <label class="settings-row"
               ><span
-                ><strong>Weekly reports</strong
-                ><small>Send summary reports every Monday.</small></span
+                ><strong>Reportes semanais</strong
+                ><small>Envie relatórios resumidos todas as segundas-feiras.</small></span
               ><input class="form-check-input" type="checkbox" checked
             /></label>
             <label class="settings-row"
               ><span
-                ><strong>Two-factor authentication</strong
-                ><small>Require extra verification for admins.</small></span
+                ><strong>Autenticação multifator</strong
+                ><small>Exigir verificação adicional para administradores.</small></span
               ><input class="form-check-input" type="checkbox"
             /></label>
           </div>
