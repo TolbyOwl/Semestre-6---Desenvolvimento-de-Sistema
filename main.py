@@ -15,6 +15,16 @@ app.secret_key = os.getenv("secret_key")
 
 #Páginas de login
 
+@app.context_processor
+def set_global_html_variable_values():
+    user_name = session.get("user_name")
+    first_name = user_name.split()[0] if user_name else None
+    return {"username": first_name}
+
+@app.route ('/')
+def default():
+    return redirect(url_for("login"))
+
 @app.route('/login', methods=["GET","POST"])
 def login():
     if request.method == "POST":
@@ -68,7 +78,6 @@ def dash():
         return redirect(url_for("login"))
     return render_template('it_dash/dash.html')
 
-
 @app.route('/new_ticket')
 def new_ticket():
     if "user" not in session: 
@@ -81,11 +90,31 @@ def tickets():
         return redirect(url_for("login"))
     return render_template('it_dash/tickets.html')
 
+@app.route('/tickets/<id>')
+def ticket(id):
+    pass
+
+@app.route('/documents')
+def documents():
+    if "user" not in session: 
+        return redirect(url_for("login"))
+    return render_template('it_dash/documents.html')
+
+@app.route('/new_document')
+def new_document():
+    if "user" not in session: 
+        return redirect(url_for("login"))
+    return render_template('it_dash/new_document.html')
+
+@app.route('/documents/<id>')
+def document(id):
+    pass
+
 @app.route('/config')
 def config():
     if "user" not in session: 
         return redirect(url_for("login"))
-    return render_template('it_dash/config.html')
+    return render_template('it_dash/config.html',username=session["user_fname"])
 
 #Erros
 
