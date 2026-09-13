@@ -3,7 +3,7 @@ from supabase import create_client, Client
 from dotenv import load_dotenv
 import os
 
-#load_dotenv() initilizando o arquivo .env com as credenciais do supabase
+#load_dotenv() # inicializando o arquivo .env com as credenciais do supabase
 url=os.getenv("SUPABASE_URL")
 key=os.getenv("ANON_KEY")
 
@@ -83,6 +83,12 @@ def new_ticket():
     if "user" not in session: 
         return redirect(url_for("login"))
     return render_template('it_dash/new_ticket.html')
+
+@app.route('/open_tickets')
+def open_tickets():
+    if "user" not in session: 
+        return redirect(url_for("login"))
+    return render_template('it_dash/open_tickets.html')
 
 @app.route('/tickets')
 def tickets():
