@@ -1,0 +1,63 @@
+{% extends "it_dash/basic_dash.html" %} {% block title %}Chamados em Aberto{%
+endblock %} {% block content %}
+
+<div class="container-fluid px-3 px-lg-4 py-4">
+  <div class="page-heading mb-4">
+    <div class="page-heading-copy">
+      <span class="page-icon">
+        <i class="bi bi-ui-checks-grid" aria-hidden="true"></i>
+      </span>
+      <div>
+        <h1 class="h3 mb-1">Painel de Atendimento</h1>
+        <p class="text-muted mb-0">
+          Gerenciamento e atualização de tickets em tempo real.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <section class="row g-3">
+    <!-- QUADRO 1 -->
+    <div class="col-12 col-lg-3">
+      <div class="panel h-100 p-3 border rounded bg-white shadow-sm">
+        <h2
+          class="h5 mb-3 section-title d-flex align-items-center justify-content-between"
+        >
+          <span><i class="bi bi-list-task me-2"></i>Abertos</span>
+          <!-- quantidade -->
+          <span class="badge bg-primary rounded-pill">0</span>
+        </h2>
+
+        <div
+          class="list-group list-group-flush overflow-auto"
+          style="max-height: 75vh"
+        >
+          <!-- lista de chamados -->
+        </div>
+      </div>
+    </div>
+
+    <!-- QUADRO 2 -->
+    <div class="col-12 col-lg-6">
+      <div
+        class="panel h-100 p-3 border rounded bg-white shadow-sm d-flex flex-column"
+        style="min-height: 75vh"
+      >
+        <!-- detalhes do chamado -->
+        <!-- conversa -->
+      </div>
+    </div>
+
+    <!-- QUADRO 3 -->
+    <div class="col-12 col-lg-3">
+      <div class="panel h-100 p-3 border rounded bg-white shadow-sm">
+        <h2 class="h5 mb-3 section-title">
+          <i class="bi bi-sliders me-2"></i><span>Gerenciar</span>
+        </h2>
+        <!-- edicao do help desk -->
+      </div>
+    </div>
+  </section>
+</div>
+
+{% endblock content %}
