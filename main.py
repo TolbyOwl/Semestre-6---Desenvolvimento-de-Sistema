@@ -13,6 +13,10 @@ supabase_admin = create_client(url, os.getenv("SERVICE_ROLE_KEY"))
 app = Flask(__name__)
 app.secret_key = os.getenv("secret_key")  
 
+#Variaveis globais
+
+insert_data=None
+
 #Páginas de login
 
 @app.context_processor
@@ -78,27 +82,41 @@ def dash():
         return redirect(url_for("login"))
     return render_template('it_dash/dash.html')
 
-@app.route('/new_ticket')
-def new_ticket():
-    if "user" not in session: 
-        return redirect(url_for("login"))
-    return render_template('it_dash/new_ticket.html')
-
-@app.route('/open_tickets')
-def open_tickets():
-    if "user" not in session: 
-        return redirect(url_for("login"))
-    return render_template('it_dash/open_tickets.html')
-
 @app.route('/tickets')
 def tickets():
     if "user" not in session: 
         return redirect(url_for("login"))
     return render_template('it_dash/tickets.html')
 
+@app.route('/new_ticket',methods=["GET","POST"])
+def new_ticket():
+    if "user" not in session: 
+        return redirect(url_for("login"))
+    if request.method == "POST":
+        subject = request.form["subject"]
+        name = request.form["name"]
+        email = request.form["email"]
+        ticket_type = request.form["ticket_type"]
+        priority = request.form["priority"]
+        description = request.form["description"]
+        insert_data=(\
+            supabase_admin.table('Ticket').insert({'subject': subject, 'name': name,\
+            'email': email, 'ticket_type': ticket_type, 'priority' : priority, 'description' : description}).select().execute()\
+                )
+        print(insert_data)
+        ticket_id=insert_data.data[0].get("id")
+        return redirect(url_for("ticket",id=ticket_id))
+    return render_template('it_dash/new_ticket.html')
+
 @app.route('/tickets/<id>')
 def ticket(id):
-    pass
+    if "user" not in session: 
+        return redirect(url_for("login"))
+    if request.base_url in ('new_ticket'):
+        ticket_data=insert_data
+    else:
+        ticket_data=supabase_admin.table('Ticket').select("*").eq("id",id).execute()
+    return render_template('it_dash/open_tickets.html',ticket_data=ticket_data)
 
 @app.route('/documents')
 def documents():
@@ -106,13 +124,13 @@ def documents():
         return redirect(url_for("login"))
     return render_template('it_dash/documents.html')
 
-@app.route('/new_document')
+@app.route('/new_document', methods=["GET","POST"])
 def new_document():
     if "user" not in session: 
         return redirect(url_for("login"))
     return render_template('it_dash/new_document.html')
 
-@app.route('/documents/<id>')
+@app.route('/documents/<id>', methods=["GET","POST"])
 def document(id):
     pass
 
