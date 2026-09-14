@@ -16,44 +16,44 @@ block content %}
 
   <section class="row g-3">
     <div class="col-12">
-      <form class="panel needs-validation" novalidate>
+      <form class="panel needs-validation" method="post">
         <div class="panel-header">
           <div>
             <h2 class="h5 mb-1 section-title">
               <i class="bi bi-ui-checks-grid" aria-hidden="true"></i
-              ><span>Novo chamado</span>
+              ><span><input class="form-control" id="titleTicket" name="subject" placeholder="Título da solicitação" required /></span>
             </h2>
           </div>
         </div>
-         <div class="col-md-12">
+         <!-- <div class="col-md-12">
             <label class="form-label" for="titleTicket">Titulo do chamado</label
-            ><input class="form-control" id="titleTicket" required />
+            ><input class="form-control" id="titleTicket" name="subject" required />
             <div class="invalid-feedback">Titulo do chamado requerido.</div>
-          </div>
+          </div> -->
         <div class="row g-3">
           <div class="col-md-6">
             <label class="form-label" for="formName">Nome completo</label
-            ><input class="form-control" id="formName" required />
+            ><input class="form-control" id="formName" name="name" required />
             <div class="invalid-feedback">Nome completo requerido.</div>
           </div>
           <div class="col-md-6">
             <label class="form-label" for="formEmail">Email</label
-            ><input class="form-control" id="formEmail" type="email" required />
+            ><input class="form-control" id="formEmail" type="email" name="email" required />
             <div class="invalid-feedback">Insira um email valido.</div>
           </div>
           <div class="col-md-6">
             <label class="form-label" for="formPlan">Solicitação</label
-            ><select class="form-select" id="formPlan" required>
+            ><select class="form-select" id="formPlan" name="ticket_type" required>
               <option value="">Solicitação</option>
               <option>Incidente</option>
               <option>Solicitação</option>
               <option>Monitoramento</option>
             </select>
-            <div class="invalid-feedback">Choose a plan.</div>
+            <!-- <div class="invalid-feedback">Choose a plan.</div> -->
           </div>
           <div class="col-md-6">
             <label class="form-label" for="formPriority">Prioridade</label>
-            <select class="form-select" id="formPriority" required>
+            <select class="form-select" id="formPriority" name="priority" required>
               <option value="">Prioridade</option>
               <option>Baixa</option>
               <option>Normal</option>
@@ -70,6 +70,7 @@ block content %}
               id="formMessage"
               rows="5"
               required
+              name="description"
             ></textarea>
             <div class="invalid-feedback">Descrição requerida.</div>
           </div>
