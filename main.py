@@ -86,7 +86,11 @@ def dash():
 def tickets():
     if "user" not in session: 
         return redirect(url_for("login"))
-    return render_template('it_dash/tickets.html')
+    new=supabase_admin.table('Ticket').select("*").eq("status","Novo").execute()
+    in_progress=supabase_admin.table('Ticket').select("*").eq("status","Em andamento").order('created_at', desc=True).execute()
+    awaiting_customer=supabase_admin.table('Ticket').select("*").eq("status","Aguardando").execute()
+    solved=supabase_admin.table('Ticket').select("*").eq("status","Resolvido").execute()
+    return render_template('it_dash/tickets.html',new=new.data, in_progress=in_progress.data, awaiting_customer=awaiting_customer.data,solved=solved.data)
 
 @app.route('/new_ticket',methods=["GET","POST"])
 def new_ticket():
@@ -117,6 +121,10 @@ def ticket(id):
     else:
         ticket_data=supabase_admin.table('Ticket').select("*").eq("id",id).execute()
     return render_template('it_dash/open_tickets.html',ticket_data=ticket_data)
+
+@app.route('/teste')
+def teste():
+    return render_template('it_dash/open_tickets.html')
 
 @app.route('/documents')
 def documents():
