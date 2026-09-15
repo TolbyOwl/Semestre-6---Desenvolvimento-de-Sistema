@@ -178,6 +178,13 @@ a {
   white-space: nowrap;
 }
 
+
+.nav-section-title {
+    font-size: var(--bs-nav-link-font-size);
+    font-weight: 700;
+    text-align: center;
+}
+
 .sidebar-user {
   margin: auto 1rem 1rem;
   padding: 0.85rem;

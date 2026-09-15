@@ -36,7 +36,7 @@
       </div>
 
       <nav class="sidebar-nav">
-
+        <div class="nav-section-title">MENU PRINCIPAL</div>
         <a class="nav-link {% if request.endpoint == 'dash' %}active{% endif %}"
            href="{{url_for("dash")}}"
            {% if request.endpoint == 'dash' %}aria-current="page"{% endif %}>
@@ -51,32 +51,43 @@
           <span class="nav-text">Usuários</span>
         </a>
 
-        <a class="nav-link" href="add-user.html">
-          <span class="nav-icon"><i class="bi bi-person-plus" aria-hidden="true"></i></span>
-          <span class="nav-text">Criar Usuário</span>
-        </a>
-
-        <a class="nav-link" href="profile.html">
-          <span class="nav-icon"><i class="bi bi-person-badge" aria-hidden="true"></i></span>
-          <span class="nav-text">Perfil</span>
-        </a>
-
-        <!-- <a class="nav-link" href="charts.html">
-          <span class="nav-icon"><i class="bi bi-bar-chart-line" aria-hidden="true"></i></span>
-          <span class="nav-text">Charts</span>
-        </a> -->
-
-        <a class="nav-link {% if request.endpoint in ['tickets', 'new_ticket'] %}active{% endif %}"
+          <a class="nav-link {% if request.endpoint in ['tickets', 'new_ticket'] %}active{% endif %}"
            href="{{url_for("tickets")}}"
            {% if request.endpoint in ['tickets', 'new_ticket'] %}aria-current="page"{% endif %}>
           <span class="nav-icon"><i class="bi bi-table" aria-hidden="true"></i></span>
           <span class="nav-text">Tickets</span>
         </a>
+
         
-        <a class="nav-link" href="components.html">
+         
+         <div class="nav-section-title">WORKSPACE</div>
+        <a class="nav-link{% if request.endpoint in ['documents', 'new_document'] %} active {% endif %}"
+           href="{{url_for("documents")}}"
+           {% if request.endpoint in ['documents', 'new_document'] %}aria-current="page"{% endif %}>
+          <span class="nav-icon"><i class="bi bi-file-earmark" aria-hidden="true"></i></span>
+          <span class="nav-text">Documentação</span>
+        </a>
+
+      
+        <a class="nav-link" href="profile.html">
+          <span class="nav-icon"><i class="bi bi-person-badge" aria-hidden="true"></i></span>
+          <span class="nav-text">Perfil</span>
+        </a>
+
+
+
+        <a class="nav-link {% if request.endpoint in ['config'] %} active {% endif %}"
+           href="{{url_for("config")}}"
+           {% if request.endpoint in ['config'] %}aria-current="page"{% endif %}>
+          <span class="nav-icon"><i class="bi bi-gear" aria-hidden="true"></i></span>
+          <span class="nav-text">Config</span>
+        </a>
+
+     
+         <!-- <a class="nav-link" href="components.html">
           <span class="nav-icon"><i class="bi bi-grid-3x3-gap" aria-hidden="true"></i></span>
           <span class="nav-text">Componentes</span>
-        </a>
+        </a> -->
 
         <!-- <a class="nav-link" href="alerts.html">
           <span class="nav-icon"><i class="bi bi-exclamation-triangle" aria-hidden="true"></i></span>
@@ -88,19 +99,12 @@
           <span class="nav-text">Modals</span>
         </a> -->
 
-        <a class="nav-link {% if request.endpoint in ['config'] %} active {% endif %}"
-           href="{{url_for("config")}}"
-           {% if request.endpoint in ['config'] %}aria-current="page"{% endif %}>
-          <span class="nav-icon"><i class="bi bi-gear" aria-hidden="true"></i></span>
-          <span class="nav-text">Config</span>
-        </a>
+        <!-- <a class="nav-link" href="add-user.html">
+          <span class="nav-icon"><i class="bi bi-person-plus" aria-hidden="true"></i></span>
+          <span class="nav-text">Criar Usuário</span>
+        </a> -->
 
-        <a class="nav-link{% if request.endpoint in ['documents', 'new_document'] %} active {% endif %}"
-           href="{{url_for("documents")}}"
-           {% if request.endpoint in ['documents', 'new_document'] %}aria-current="page"{% endif %}>
-          <span class="nav-icon"><i class="bi bi-file-earmark" aria-hidden="true"></i></span>
-          <span class="nav-text">Documentação</span>
-        </a>
+       
 
       </nav>
 
