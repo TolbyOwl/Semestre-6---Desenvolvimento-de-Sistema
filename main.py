@@ -146,7 +146,7 @@ def document(id):
 def config():
     if "user" not in session: 
         return redirect(url_for("login"))
-    return render_template('it_dash/config.html',username=session["user_fname"])
+    return render_template('it_dash/config.html')
 
 #Erros
 
