@@ -8,23 +8,23 @@ block content %}
         ><i class="bi bi-ui-checks-grid" aria-hidden="true"></i
       ></span>
       <div>
-        <h1 class="h3 mb-1">Novo Ticket</h1>
-        <p class="text-muted mb-0">xxxxxxxxxxxxxxxxxxxxx.</p>
+        <h1 class="h3 mb-1"><input class="form-subject" id="titleTicket" name="subject" form="ticketForm" placeholder="Título da solicitação" required /></h1>
+        <!-- <p class="text-muted mb-0">xxxxxxxxxxxxxxxxxxxxx.</p> -->
       </div>
     </div>
   </div>
 
   <section class="row g-3">
     <div class="col-12">
-      <form class="panel needs-validation" method="post">
-        <div class="panel-header">
+      <form id="ticketForm" class="panel needs-validation" method="post">
+        <!-- <div class="panel-header">
           <div>
             <h2 class="h5 mb-1 section-title">
               <i class="bi bi-ui-checks-grid" aria-hidden="true"></i
               ><span><input class="form-control" id="titleTicket" name="subject" placeholder="Título da solicitação" required /></span>
             </h2>
           </div>
-        </div>
+        </div> -->
          <!-- <div class="col-md-12">
             <label class="form-label" for="titleTicket">Titulo do chamado</label
             ><input class="form-control" id="titleTicket" name="subject" required />
