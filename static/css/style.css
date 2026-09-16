@@ -1300,6 +1300,13 @@ html[data-theme="dark"] .auth-body {
   color: var(--admin-text);
 }
 
+.form-subject{
+  background-color: var(--admin-bg);
+  width: 100%;
+  box-shadow: none;
+  border: none;
+}
+
 .form-control:focus,
 .form-select:focus {
   border-color: #93c5fd;
