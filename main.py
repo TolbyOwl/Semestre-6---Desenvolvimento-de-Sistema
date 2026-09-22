@@ -1,7 +1,9 @@
 from flask import Flask, render_template, request, redirect,  url_for, session, jsonify
 from supabase import create_client, Client
 from dotenv import load_dotenv
+from datetime import datetime, timezone
 import os
+from zoneinfo import ZoneInfo
 
 #load_dotenv() # inicializando o arquivo .env com as credenciais do supabase
 url=os.getenv("SUPABASE_URL")
@@ -15,9 +17,25 @@ app.secret_key = os.getenv("secret_key")
 
 #Variaveis globais
 
+SAO_PAULO_TIMEZONE = ZoneInfo("America/Sao_Paulo")
+
 insert_data=None
 
-#Páginas de login
+@app.template_filter("sao_paulo_datetime")
+def format_sao_paulo_datetime(value):
+    if not value:
+        return ""
+    
+    if isinstance(value, str):
+        try:
+            value = datetime.fromisoformat(value.replace("Z", "+00:00"))
+        except ValueError:
+            return value
+
+    if value.tzinfo is None:
+        value = value.replace(tzinfo=timezone.utc)
+
+    return value.astimezone(SAO_PAULO_TIMEZONE).strftime("%d/%m/%Y - %H:%M")
 
 @app.context_processor
 def set_global_html_variable_values():
@@ -25,9 +43,13 @@ def set_global_html_variable_values():
     first_name = user_name.split()[0] if user_name else None
     return {"username": first_name}
 
+#Páginas de login
+
 @app.route ('/')
-def default():
-    return redirect(url_for("login"))
+def home():
+    if "user" not in session: 
+        return redirect(url_for("login"))
+    return render_template('it_dash/dash.html')
 
 @app.route('/login', methods=["GET","POST"])
 def login():
@@ -116,15 +138,12 @@ def new_ticket():
 def ticket(id):
     if "user" not in session: 
         return redirect(url_for("login"))
-    if request.base_url in ('new_ticket'):
-        ticket_data=insert_data
-    else:
-        ticket_data=supabase_admin.table('Ticket').select("*").eq("id",id).execute()
-    return render_template('it_dash/open_tickets.html',ticket_data=ticket_data)
-
-@app.route('/teste')
-def teste():
+    response = supabase_admin.table('Ticket').select("*").eq("id",id).single().execute()
+    if not response.data:
+        return render_template("errors/404.html"), 404
     return render_template('it_dash/open_tickets.html')
+
+#Base de conhecimento
 
 @app.route('/documents')
 def documents():
@@ -136,11 +155,28 @@ def documents():
 def new_document():
     if "user" not in session: 
         return redirect(url_for("login"))
+    if request.method == "POST":
+        subject = request.form["subject"]
+        tag = request.form["tag"]
+        content = request.form["editordata"]
+        response=(\
+            supabase_admin.table('Documentacao').insert({'subject': subject, 'tag': tag,\
+            'content': content}).select().execute()\
+                )
+        document_id=response.data[0].get("id")
+        return redirect(url_for("document",id=document_id))
     return render_template('it_dash/new_document.html')
 
 @app.route('/documents/<id>', methods=["GET","POST"])
 def document(id):
-    pass
+    if "user" not in session: 
+        return redirect(url_for("login"))
+    response = supabase_admin.table('Documentacao').select("*").eq("id",id).single().execute()
+    if not response.data:
+        return render_template("errors/404.html"), 404
+    return render_template('it_dash/open_document.html')
+
+###########
 
 @app.route('/config')
 def config():
@@ -155,7 +191,10 @@ def page_not_found(e):
     return render_template('errors/404.html'), 404
 
 
-#Funções que se repetem:
+#Para testes
+@app.route('/teste')
+def teste():
+    return render_template('it_dash/open_tickets.html')
 
 
 #Execução
