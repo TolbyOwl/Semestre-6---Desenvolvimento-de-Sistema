@@ -32,9 +32,12 @@
                   <div class="activity-item">
                     <span class="activity-dot bg-primary"></span>
                     <div>
-                      <p class="mb-1 fw-semibold">{{ somenew.subject }}</p>
-                      <p class="text-muted small mb-0">{{ somenew.description }}</p>
-                      <p class="text-muted small mb-0">{{somenew.name.split()[0]}}</p>
+                      <a href="{{ url_for('ticket', id=somenew.id) }}" class="content-link">
+                        <p class="mb-1 fw-semibold">{{ somenew.subject }}</p>
+                        <p class="text-muted small mb-0">{{ somenew.description }}</p>
+                        <p class="text-muted small mb-0">{{somenew.name.split()[0]}}</p>
+                        <p class="text-muted small mb-0">{{ somenew.created_at|sao_paulo_datetime }}</p>
+                      </a>
                     </div>
                   </div>
                   {% endfor %}

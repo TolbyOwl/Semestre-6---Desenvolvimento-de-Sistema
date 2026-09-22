@@ -6,18 +6,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="adminHMD authentication page">
   <title>{% block title %}{% endblock %}</title>
-  <link rel="stylesheet" href="static\css\bootstrap.min.css">
-  <link rel="stylesheet" href="static\vendors\bootstrap-icons\bootstrap-icons.css">
-  <link rel="stylesheet" href="static\css\style.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='vendors/bootstrap-icons/bootstrap-icons.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
   <link rel="icon" href="/static/images/favicon/icons8-fones-de-ouvido-48.png">
   
 
-  <script src="static\js\bootstrap.bundle.min.js"></script>
+  <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
 
   {% if request.endpoint == 'new_document' %}
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-  <link href="static\css\summernote-bs5.css" rel="stylesheet">
-  <script src="static\js\summernote-bs5.js"></script>
+  <link href="{{ url_for('static', filename='css/summernote-bs5.css') }}" rel="stylesheet">
+  <script src="{{ url_for('static', filename='js/summernote-bs5.js') }}"></script>
   {% endif %}
 
 </head>
@@ -28,7 +28,7 @@
 
     <aside class="admin-sidebar" id="adminSidebar" aria-label="Main navigation">
       <div class="sidebar-header">
-        <a class="brand-mark" href="index.html" aria-label="adminHMD dashboard">
+        <a class="brand-mark" href="{{url_for("home")}}" aria-label="adminHMD dashboard">
           <span class="brand-icon"><img src="/static/images/png/logo unidesk.png" alt="logo unidesk"></span>
           <span class="brand-copy">
             <span class="brand-title">adminHMD</span>
@@ -165,7 +165,7 @@
                 </a>
 
                 <a class="dropdown-item" href="charts.html">
-                  <span class="notification-title">Meta de receita alcançada/span>
+                  <span class="notification-title">Meta de receita alcançada</span>
                   <span class="notification-time">32 minutos atrás</span>
                 </a>
 
@@ -183,19 +183,19 @@
                       aria-expanded="false">
 
                 <img class="avatar-img avatar-sm"
-                     src="../assets/images/avatar/avatar.jpg"
+                   src="{{ url_for('static', filename='images/avatar/avatar.jpg') }}"
                      alt="">
 
                 <span class="profile-name d-none d-sm-inline">Olá, {{ username }}!</span>
               </button>
 
               <ul class="dropdown-menu dropdown-menu-end">
-                <li>
+                <!-- <li>
                   <a class="dropdown-item" href="profile.html">Perfil</a>
-                </li>
+                </li> -->
 
                 <li>
-                  <a class="dropdown-item" href="settings.html">Configurações de conta</a>
+                  <a class="dropdown-item" href="{{url_for("config")}}">Configurações de conta</a>
                 </li>
 
                 <li>
@@ -203,7 +203,7 @@
                 </li>
 
                 <li>
-                  <a class="dropdown-item" href="login.html">Sair</a>
+                  <a class="dropdown-item" href="{{url_for("logout")}}">Sair</a>
                 </li>
               </ul>
             </div>
@@ -232,7 +232,7 @@
     </div>
   </div>
 
-  <script src="static\js\main.js"></script>
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 
   <!-- {% if request.endpoint in ['new_document'] %}     
     <script>
