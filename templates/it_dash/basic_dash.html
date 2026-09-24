@@ -14,7 +14,7 @@
 
   <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
 
-  {% if request.endpoint == 'new_document' %}
+  {% if request.endpoint in ['new_document', 'document'] %}
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
   <link href="{{ url_for('static', filename='css/summernote-bs5.css') }}" rel="stylesheet">
   <script src="{{ url_for('static', filename='js/summernote-bs5.js') }}"></script>
@@ -31,8 +31,8 @@
         <a class="brand-mark" href="{{url_for("home")}}" aria-label="adminHMD dashboard">
           <span class="brand-icon"><img src="/static/images/png/logo unidesk.png" alt="logo unidesk"></span>
           <span class="brand-copy">
-            <span class="brand-title">adminHMD</span>
-            <span class="brand-subtitle">Admin Template</span>
+            <span class="brand-title">UniDesk</span>
+            <!-- <span class="brand-subtitle">Admin Template</span> -->
           </span>
         </a>
       </div>
@@ -246,17 +246,40 @@
       });
     </script> 
   {% endif %} -->
-  {% if request.endpoint == 'new_document' %}
+  {% if request.endpoint in ['new_document', 'document'] %}
   <script>
     $(function () {
-      $('#summernote').summernote({
+      const editor = $('#summernote');
+
+      editor.summernote({
         lang: 'pt-BR',
         placeholder: 'Pronto para digitar...',
         tabsize: 2,
-        height: 400,
+        height: 500,
         minHeight: null,
         maxHeight: null
       });
+
+      {% if request.endpoint == 'document' %}
+      const toolbar = editor.next('.note-editor').find('.note-toolbar');
+      const editButton = $('#editButton');
+      const submitButton = $('#submitButton');
+      const titleTicket = $('#titleTicket');
+      const tag = $('#tag');
+
+      editor.summernote('disable');
+      toolbar.hide();
+
+      editButton.on('click', function () {
+        editor.summernote('enable');
+        toolbar.show();
+        editButton.addClass('d-none');
+        submitButton.removeClass('d-none');
+        titleTicket.removeAttr('disabled');
+        tag.removeAttr('disabled')
+        editor.summernote('focus');
+      });
+      {% endif %}
     });
   </script>
 {% endif %}

@@ -1191,6 +1191,21 @@ html[data-theme="dark"] .profile-avatar {
   min-width: 0;
 }
 
+.page-heading-for-forms {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex: 1 1 auto;
+  width: 100%;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.page-heading-for-forms > .col-md-12 {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
 .page-icon,
 .section-title i {
   display: inline-grid;
