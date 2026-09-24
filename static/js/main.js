@@ -236,5 +236,36 @@
     } else if (mediaQuery.addListener) {
       mediaQuery.addListener(handleBreakpointChange);
     }
+
+    var telefone = document.getElementById("telefone");
+
+    if (telefone) {
+      telefone.addEventListener("input", function () {
+        var valor = telefone.value.replace(/\D/g, "");
+
+        if (valor.length > 11) {
+          valor = valor.substring(0, 11);
+        }
+
+        if (valor.length <= 2) {
+          telefone.value = valor ? "(" + valor : "";
+        } else if (valor.length <= 7) {
+          telefone.value =
+            "(" + valor.substring(0, 2) + ") " + valor.substring(2);
+        } else {
+          telefone.value =
+            "(" +
+            valor.substring(0, 2) +
+            ") " +
+            valor.substring(2, 7) +
+            "-" +
+            valor.substring(7);
+        }
+      });
+    }
+
+    
+
   });
 })();
+
