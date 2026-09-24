@@ -149,7 +149,8 @@ def ticket(id):
 def documents():
     if "user" not in session: 
         return redirect(url_for("login"))
-    return render_template('it_dash/documents.html')
+    documents_data=supabase_admin.table('Documentacao').select("*").execute()
+    return render_template('it_dash/documents.html',documents=documents_data.data)
 
 @app.route('/new_document', methods=["GET","POST"])
 def new_document():
@@ -174,7 +175,15 @@ def document(id):
     response = supabase_admin.table('Documentacao').select("*").eq("id",id).single().execute()
     if not response.data:
         return render_template("errors/404.html"), 404
-    return render_template('it_dash/open_document.html')
+    if request.method == "POST":
+        subject = request.form["subject"]
+        tag = request.form["tag"]
+        content = request.form["editordata"]
+        response=(\
+            supabase_admin.table('Documentacao').update({'subject': subject, 'tag': tag,\
+            'content': content}).eq("id",id).execute())
+        return redirect(url_for("document",id=id))
+    return render_template('it_dash/open_document.html',document=response.data)
 
 ###########
 

@@ -3,21 +3,23 @@
 {% block content %}
         <div class="container-fluid px-3 px-lg-4 py-4">
           <div class="page-heading">
-            <div class="page-heading-copy">
-              <span class="page-icon"><i class="bi bi-table" aria-hidden="true"></i></span>
+            <div class="page-heading-copy d-flex">
+              <span class="page-icon"><i class="bi bi-file-earmark" aria-hidden="true"></i></span>
               <div>
-                <p class="eyebrow mb-1">Data</p>
+                <p class="eyebrow mb-1">Documentação</p>
                 <!-- <h1 class="h3 mb-1">Tables</h1> -->
-                <p class="text-muted mb-0">Use responsive, searchable tables for operational records.</p>
+                <p class="text-muted mb-0">Use a base de conhecimento nas sessões de suporte.</p>
               </div>
             </div>
             <div class="heading-actions"><a class="btn btn-primary btn-sm" href="{{url_for("new_document")}}" ><i class="bi bi-file-earmark-plus" aria-hidden="true"></i> Novo documento</a></div>
           </div>
 
           <section class="panel">
-            <div class="panel-header"><div><h2 class="h5 mb-1 section-title"><i class="bi bi-table" aria-hidden="true"></i><span>Advanced Table</span></h2><p class="text-muted mb-0">Searchable responsive table for orders and customer data.</p></div><input class="form-control form-control-sm table-search" type="search" placeholder="Search orders" data-table-search="ordersTable" aria-label="Search orders"></div>
-            <div class="table-responsive"><table class="table align-middle mb-0" id="ordersTable" data-searchable-table><thead><tr><th>Order</th><th>Product</th><th>Customer</th><th>Date</th><th class="text-end">Action</th></tr></thead><tbody>
-              <tr><td class="fw-semibold">#HMD-2048</td><td><div class="table-media"><span>Wireless Headset</span></div></td><td>Sarah Ahmed</td><td>May 6, 2026</td><td class="text-end"><button class="btn btn-light btn-sm" type="button">View</button></td></tr>
+            <div class="panel-header"><div><h2 class="h5 mb-1 section-title"><i class="bi bi-file-earmark" aria-hidden="true"></i><span>Base de conhecimento</span></h2></div><input class="form-control form-control-sm table-search" type="search" placeholder="Search orders" data-table-search="ordersTable" aria-label="Buscar um artigo"></div>
+            <div class="table-responsive"><table class="table align-middle mb-0" id="ordersTable" data-searchable-table><thead><tr><th>#</th><th>Assunto</th><th>Tag</th><th>Data de criação</th><th class="text-end">Ação</th></tr></thead><tbody>
+              {% for document in documents %}
+              <tr><td class="fw-semibold">#{{ document.id }}</td><td><div class="table-media"><span>{{ document.subject }}</span></div></td><td>{{ document.tag }}</td><td>{{ document.created_at|sao_paulo_datetime }}</td><td class="text-end"><a class="content-link" href="{{url_for("document",id=document.id)}}"><button class="btn btn-light btn-sm" type="button">Abrir</button></a></td></tr>
+              {% endfor %}
             </tbody></table></div>
           </section>
         </div>
