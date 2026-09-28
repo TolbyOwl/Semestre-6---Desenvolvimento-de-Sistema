@@ -1,6 +1,5 @@
-{% extends "it_dash/basic_dash.html" %} 
-{% block title %}Chamado {%endblock %} 
-{% block content %}
+{% extends "it_dash/basic_dash.html" %} {% block title %}Chamado #{{ ticket.id
+if ticket else '' }}{% endblock %} {% block content %}
 <div class="container-fluid px-3 px-lg-4 py-4">
   <div class="page-heading mb-4">
     <div class="page-heading-copy">
@@ -24,15 +23,31 @@
           class="h5 mb-3 section-title d-flex align-items-center justify-content-between"
         >
           <span><i class="bi bi-list-task me-2"></i>Abertos</span>
-          <!-- quantidade -->
-          <span class="badge bg-primary rounded-pill">0</span>
+          <span class="badge bg-primary rounded-pill"
+            >{{ open_tickets|length if open_tickets else 0 }}</span
+          >
         </h2>
 
         <div
           class="list-group list-group-flush overflow-auto"
           style="max-height: 75vh"
         >
-          <!-- lista de chamados -->
+          {% if open_tickets %} {% for t in open_tickets %}
+          <a
+            href="{{ url_for('ticket', id=t.id) }}"
+            class="list-group-item list-group-item-action {% if ticket and t.id|string == ticket.id|string %}active{% endif %}"
+          >
+            <div class="fw-bold">
+              {{ t.subject or t.title or ('Chamado #' ~ t.id) }}
+            </div>
+            <small
+              class="{% if ticket and t.id|string == ticket.id|string %}text-light{% else %}text-muted{% endif %}"
+              >Status: {{ t.status or 'Aberto' }}</small
+            >
+          </a>
+          {% endfor %} {% else %}
+          <div class="text-muted small p-2">Nenhum chamado aberto.</div>
+          {% endif %}
         </div>
       </div>
     </div>
@@ -43,8 +58,68 @@
         class="panel h-100 p-3 border rounded bg-white shadow-sm d-flex flex-column"
         style="min-height: 75vh"
       >
-        <!-- detalhes do chamado -->
-        <!-- conversa -->
+        <!-- Detalhes do Chamado -->
+        <div
+          class="border-bottom pb-2 mb-3 d-flex justify-content-between align-items-center"
+        >
+          <div>
+            <h2 class="h5 mb-0">
+              {{ ticket.subject or ticket.title or ('Chamado #' ~ (ticket.id if
+              ticket else '')) }}
+            </h2>
+            {% if ticket %}
+            <small class="text-muted"
+              >ID: {{ ticket.id }} | Status: {{ ticket.status or 'Aberto'
+              }}</small
+            >
+            {% endif %}
+          </div>
+          <span id="connection-status" class="badge bg-secondary"
+            >Conectando Realtime...</span
+          >
+        </div>
+
+        <!-- Área de Conversa -->
+        <div
+          id="chat-messages"
+          class="flex-grow-1 overflow-auto pe-2 mb-3 d-flex flex-column gap-2"
+          style="max-height: 55vh"
+        >
+          {% if messages %} {% for m in messages %}
+          <div
+            class="d-flex flex-column {% if m.user_id == session.get('user_id') %}align-items-end{% else %}align-items-start{% endif %}"
+          >
+            <span class="small text-muted mb-1" style="font-size: 0.75rem"
+              >{{ m.user_name or 'Usuário' }}</span
+            >
+            <div
+              class="p-2 rounded-3 text-break shadow-sm {% if m.user_id == session.get('user_id') %}bg-primary text-white{% else %}bg-light text-dark border{% endif %}"
+              style="max-width: 75%"
+            >
+              {{ m.content }}
+            </div>
+          </div>
+          {% endfor %} {% else %}
+          <div id="no-messages" class="text-muted small text-center my-auto">
+            Sem mensagens neste chamado.
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- Formulário para Envio -->
+        <form id="chat-form" class="mt-auto border-top pt-3 d-flex gap-2">
+          <input
+            type="text"
+            id="message-input"
+            class="form-control"
+            placeholder="Digite sua resposta..."
+            required
+            autocomplete="off"
+          />
+          <button type="submit" class="btn btn-primary px-3">
+            <i class="bi bi-send-fill"></i>
+          </button>
+        </form>
       </div>
     </div>
 
@@ -54,9 +129,119 @@
         <h2 class="h5 mb-3 section-title">
           <i class="bi bi-sliders me-2"></i><span>Gerenciar</span>
         </h2>
-        <!-- edicao do help desk -->
+        <p class="small text-muted">Ações operacionais do Help Desk.</p>
+        <button class="btn btn-outline-danger w-100 mb-2 btn-sm">
+          Finalizar Chamado
+        </button>
+        <button class="btn btn-outline-secondary w-100 btn-sm">
+          Transferir Fila
+        </button>
       </div>
     </div>
   </section>
 </div>
+
+<!-- SCRIPT JAVASCRIPT -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const TEST_SUPABASE_URL = "{{ config['TEST_SUPABASE_URL'] or '' }}";
+  const TEST_ANON_KEY = "{{ config['TEST_ANON_KEY'] or '' }}";
+  const TICKET_ID = "{{ ticket.id if ticket else '' }}";
+  const CURRENT_USER_ID = "{{ session.get('user_id') or 'atendente-id' }}";
+  const CURRENT_USER_NAME = "{{ session.get('user_name') or 'Atendente' }}";
+
+  const supabaseClient = supabase.createClient(
+    TEST_SUPABASE_URL,
+    TEST_ANON_KEY,
+  );
+  const messagesContainer = document.getElementById("chat-messages");
+  const chatForm = document.getElementById("chat-form");
+  const messageInput = document.getElementById("message-input");
+  const statusBadge = document.getElementById("connection-status");
+
+  function scrollToBottom() {
+    if (messagesContainer) {
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+  }
+  scrollToBottom();
+
+  function appendMessageToChat(msg) {
+    const noMsgDiv = document.getElementById("no-messages");
+    if (noMsgDiv) noMsgDiv.remove();
+
+    const isMe = msg.user_id === CURRENT_USER_ID;
+    const msgWrapper = document.createElement("div");
+    msgWrapper.className = `d-flex flex-column ${isMe ? "align-items-end" : "align-items-start"}`;
+
+    msgWrapper.innerHTML = `
+      <span class="small text-muted mb-1" style="font-size: 0.75rem;">${msg.user_name || "Usuário"}</span>
+      <div class="p-2 rounded-3 text-break shadow-sm ${isMe ? "bg-primary text-white" : "bg-light text-dark border"}" style="max-width: 75%;">
+        ${msg.content}
+      </div>
+    `;
+
+    messagesContainer.appendChild(msgWrapper);
+    scrollToBottom();
+  }
+
+  // Supabase Realtime Broadcast
+  let channel = null;
+
+  if (TICKET_ID) {
+    channel = supabaseClient.channel(`room:ticket-${TICKET_ID}`, {
+      config: { broadcast: { self: true } },
+    });
+
+    channel
+      .on("broadcast", { event: "new_message" }, (payload) => {
+        if (payload && payload.payload) {
+          appendMessageToChat(payload.payload);
+        }
+      })
+      .subscribe((status) => {
+        if (status === "SUBSCRIBED") {
+          statusBadge.className = "badge bg-success";
+          statusBadge.innerText = "Realtime Conectado";
+        } else {
+          statusBadge.className = "badge bg-secondary";
+          statusBadge.innerText = status;
+        }
+      });
+  }
+
+  // Envio de Mensagem: Transmite via Broadcast
+  // Salva no Banco de Testes
+  if (chatForm) {
+    chatForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const content = messageInput.value.trim();
+      if (!content || !TICKET_ID) return;
+
+      messageInput.value = "";
+
+      const msgPayload = {
+        ticket_id: TICKET_ID,
+        user_id: CURRENT_USER_ID,
+        user_name: CURRENT_USER_NAME,
+        content: content,
+        created_at: new Date().toISOString(),
+      };
+
+      if (channel) {
+        await channel.send({
+          type: "broadcast",
+          event: "new_message",
+          payload: msgPayload,
+        });
+      }
+
+      fetch("/api/send_message", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(msgPayload),
+      }).catch((err) => console.error("Erro ao persistir:", err));
+    });
+  }
+</script>
 {% endblock content %}

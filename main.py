@@ -5,15 +5,27 @@ from datetime import datetime, timezone
 import os
 from zoneinfo import ZoneInfo
 
-#load_dotenv() # inicializando o arquivo .env com as credenciais do supabase
+load_dotenv()
 url=os.getenv("SUPABASE_URL")
 key=os.getenv("ANON_KEY")
 
+# Cliente oficial para Login/Auth
 supabase: Client = create_client(url, key)
 supabase_admin = create_client(url, os.getenv("SERVICE_ROLE_KEY"))
 
+# Testes para o Chat e Mensagens
+# Apagar depois
+TEST_SUPABASE_URL = os.getenv("TEST_SUPABASE_URL", "https://usplkwxqzyxnujcmpxvq.supabase.co")
+TEST_ANON_KEY = os.getenv("TEST_SUPABASE_ANON_KEY", "sb_publishable_a4o8vZl3NLQXgHQZmo930A_j4AyXP0S")
+TEST_SERVICE_KEY = os.getenv("TEST_SUPABASE_SECRET_KEY", "sb_secret_S4NPr-4kwZGcWTbTXAK9TQ_KWOWwjHA")
+
+test_supabase_admin = create_client(TEST_SUPABASE_URL, TEST_SERVICE_KEY)
+
 app = Flask(__name__)
 app.secret_key = os.getenv("secret_key")  
+app.config['TEST_SUPABASE_URL'] = TEST_SUPABASE_URL
+app.config['TEST_ANON_KEY'] = TEST_ANON_KEY
+
 
 #Variaveis globais
 
@@ -138,10 +150,80 @@ def new_ticket():
 def ticket(id):
     if "user" not in session: 
         return redirect(url_for("login"))
-    response = supabase_admin.table('Ticket').select("*").eq("id",id).single().execute()
-    if not response.data:
-        return render_template("errors/404.html"), 404
-    return render_template('it_dash/open_tickets.html')
+    
+    # Buscar lista de chamados abertos para o Quadro 1
+    open_tickets = []
+    try:
+        open_res = supabase_admin.table('Ticket').select("*").order('created_at', desc=True).execute()
+        if open_res and open_res.data:
+            open_tickets = open_res.data
+    except Exception:
+        pass
+
+    # Buscar dados do chamado selecionado
+    ticket_data = None
+    try:
+        response = supabase_admin.table('Ticket').select("*").eq("id", id).single().execute()
+        if response and response.data:
+            ticket_data = response.data
+    except Exception:
+        pass
+
+    if not ticket_data:
+        ticket_data = {'id': id, 'subject': f'Chamado #{id}', 'status': 'Aberto', 'name': 'Cliente'}
+
+    # Buscar mensagens históricas no Banco de Testes
+    messages = []
+    try:
+        messages_response = test_supabase_admin.table('messages').select("*").eq("ticket_id", str(id)).order('created_at', desc=False).execute()
+        if messages_response and messages_response.data:
+            messages = messages_response.data
+    except Exception as e:
+        print("Aviso ao carregar mensagens:", e)
+
+    return render_template(
+        'it_dash/open_tickets.html', 
+        ticket=ticket_data, 
+        open_tickets=open_tickets,
+        messages=messages
+    )
+
+@app.route('/test_chat')
+@app.route('/test_chat/<ticket_id>')
+def test_chat(ticket_id=None):
+    ticket_id = ticket_id or "1"
+    messages = []
+    try:
+        messages_response = test_supabase_admin.table('messages').select("*").eq("ticket_id", str(ticket_id)).order('created_at', desc=False).execute()
+        if messages_response and messages_response.data:
+            messages = messages_response.data
+    except Exception:
+        pass
+    return render_template('it_dash/test_chat.html', ticket_id=ticket_id, messages=messages)
+
+@app.route('/api/send_message', methods=['POST'])
+def send_message_api():
+    data = request.json or {}
+    ticket_id = data.get('ticket_id', '1')
+    content = data.get('content')
+    user_id = data.get('user_id', session.get('user_id', 'anon-user'))
+    user_name = data.get('user_name', session.get('user_name', 'Atendente'))
+
+    if not ticket_id or not content:
+        return jsonify({'error': 'Campos obrigatórios ausentes'}), 400
+
+    try:
+        res = test_supabase_admin.table('messages').insert({
+            'ticket_id': str(ticket_id),
+            'user_id': str(user_id),
+            'user_name': str(user_name),
+            'content': content
+        }).execute()
+        return jsonify({'success': True, 'data': res.data})
+    except Exception as e:
+        print("ERRO AO SALVAR NO BANCO DE TESTES:", e)
+        return jsonify({'error': str(e)}), 500
+
 
 #Base de conhecimento
 
