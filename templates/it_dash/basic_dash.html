@@ -264,6 +264,8 @@
       const toolbar = editor.next('.note-editor').find('.note-toolbar');
       const editButton = $('#editButton');
       const submitButton = $('#submitButton');
+      const deleteButton = $('#deleteButton');
+      const deleteForm = $('#deleteDocumentForm');
       const titleTicket = $('#titleTicket');
       const tag = $('#tag');
 
@@ -275,9 +277,15 @@
         toolbar.show();
         editButton.addClass('d-none');
         submitButton.removeClass('d-none');
+        deleteButton.removeClass('d-none');
         titleTicket.removeAttr('disabled');
         tag.removeAttr('disabled')
         editor.summernote('focus');
+      });
+      deleteForm.on('submit', function (event) {
+        if (!confirm("Tem certeza que deseja excluir o documento? A ação é irreversível.")) {
+          event.preventDefault();
+        }
       });
       {% endif %}
     });
