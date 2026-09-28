@@ -68,7 +68,7 @@ a {
   /* Reserve scrollbar gutter to keep inner content width stable so header/footer dividers align with scrollbar */
   scrollbar-gutter: stable;
   background: var(--admin-sidebar);
-  color: #ffffff;
+  color: #962020;
   box-shadow: 18px 0 42px rgba(15, 23, 42, 0.18);
   transform: translateX(0);
   transition: width 0.2s ease, transform 0.2s ease;
@@ -107,7 +107,7 @@ a {
   width: 42px;
   height: 42px;
   border-radius: 8px;
-  background: linear-gradient(135deg, #2563eb, #0f766e);
+  background: linear-gradient(135deg, #3570ed, #9dc7f1);
   color: #ffffff;
 }
 
