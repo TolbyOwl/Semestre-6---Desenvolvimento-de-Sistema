@@ -24,6 +24,8 @@
     </div>
   </div>
 
+  <form id="deleteDocumentForm" action="{{ url_for('delete_document', id=document.id) }}" method="post"></form>
+
   <section class="row g-3">
     <div class="col-12">
       <form id="ticketForm" class="panel needs-validation" method="post">
@@ -39,6 +41,9 @@
           </div>
         </div>
         <div class="d-flex justify-content-end gap-2 mt-4">
+          <button class="btn btn-primary d-none bg-danger" id="deleteButton" type="submit" form="deleteDocumentForm">
+            <i class="bi bi-trash" aria-hidden="true"></i> Excluir
+          </button>
           <button class="btn btn-primary" id="editButton" type="button">
             Editar
           </button>

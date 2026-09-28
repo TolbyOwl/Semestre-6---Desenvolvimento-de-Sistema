@@ -185,6 +185,13 @@ def document(id):
         return redirect(url_for("document",id=id))
     return render_template('it_dash/open_document.html',document=response.data)
 
+@app.route('/documents/<id>/delete', methods=['POST'])
+def delete_document(id):
+    if "user" not in session: 
+        return redirect(url_for("login"))
+    supabase_admin.table('Documentacao').delete().eq("id",id).execute()
+    return redirect(url_for("documents"))
+
 ###########
 
 @app.route('/config')
