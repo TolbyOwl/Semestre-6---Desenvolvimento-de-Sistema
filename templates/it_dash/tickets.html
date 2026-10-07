@@ -1,15 +1,13 @@
 {% extends "it_dash/basic_dash.html" %}
 {% block title %} Tickets{% endblock %}
 {% block content %}
-
         <div class="container-fluid px-3 px-lg-4 py-4">
           <div class="page-heading">
             <div class="page-heading-copy">
-              <span class="page-icon"><i class="bi bi-speedometer2" aria-hidden="true"></i></span>
+              <span class="page-icon"><i class="bi bi-ticket" aria-hidden="true"></i></span>
               <div>
                 <p class="eyebrow mb-1">Atendimento</p>
-                <h1 class="h3 mb-1">Dashboard</h1>
-                <p class="text-muted mb-0">Fluxo de suporte por etapa.</p>
+                <h1 class="h3 mb-1">Chamados de suporte</h1>
               </div>
             </div>
             <div class="heading-actions"><a class="btn btn-primary btn-sm" href="{{url_for("new_ticket")}}" ><i class="bi bi-file-earmark-plus" aria-hidden="true"></i> Novo Chamado</a></div>
@@ -34,13 +32,15 @@
                     <div>
                       <a href="{{ url_for('ticket', id=somenew.id) }}" class="content-link">
                         <p class="mb-1 fw-semibold">{{ somenew.subject }}</p>
-                        <p class="text-muted small mb-0">{{ somenew.description }}</p>
                         <p class="text-muted small mb-0">{{somenew.name.split()[0]}}</p>
                         <p class="text-muted small mb-0">{{ somenew.created_at|sao_paulo_datetime }}</p>
                       </a>
                     </div>
                   </div>
                   {% endfor %}
+                  {% if new==none %}
+                  <p class="text-muted small mb-0">Sem novos Tickets</p>
+                  {% endif %}
                 </div>
               </div>
             </div>
@@ -55,9 +55,21 @@
                 </div>
 
                 <div class="activity-list">
-                  <div class="activity-item"><span class="activity-dot bg-primary"></span><div><p class="mb-1 fw-semibold">New campaign launched</p><p class="text-muted small mb-0">Marketing team published the May offer.</p></div></div>
-                  <div class="activity-item"><span class="activity-dot bg-success"></span><div><p class="mb-1 fw-semibold">Payment batch cleared</p><p class="text-muted small mb-0">246 invoices were processed successfully.</p></div></div>
-                  <div class="activity-item"><span class="activity-dot bg-warning"></span><div><p class="mb-1 fw-semibold">Support queue rising</p><p class="text-muted small mb-0">Average first response time is 18 minutes.</p></div></div>
+                  {% for someprogress in in_progress %}
+                  <div class="activity-item">
+                    <span class="activity-dot bg-warning"></span>
+                    <div>
+                      <a href="{{ url_for('ticket', id=someprogress.id) }}" class="content-link">
+                        <p class="mb-1 fw-semibold">{{ someprogress.subject }}</p>
+                        <p class="text-muted small mb-0">{{someprogress.name.split()[0]}}</p>
+                        <p class="text-muted small mb-0">{{ someprogress.created_at|sao_paulo_datetime }}</p>
+                      </a>
+                    </div>
+                  </div>
+                  {% endfor %}
+                  {% if not in_progress %}
+                  <p class="text-muted small mb-0">Sem Tickets em progresso</p>
+                  {% endif %}
                 </div>
               </div>
             </div>
@@ -72,9 +84,21 @@
                 </div>
 
                 <div class="activity-list">
-                  <div class="activity-item"><span class="activity-dot bg-primary"></span><div><p class="mb-1 fw-semibold">New campaign launched</p><p class="text-muted small mb-0">Marketing team published the May offer.</p></div></div>
-                  <div class="activity-item"><span class="activity-dot bg-success"></span><div><p class="mb-1 fw-semibold">Payment batch cleared</p><p class="text-muted small mb-0">246 invoices were processed successfully.</p></div></div>
-                  <div class="activity-item"><span class="activity-dot bg-warning"></span><div><p class="mb-1 fw-semibold">Support queue rising</p><p class="text-muted small mb-0">Average first response time is 18 minutes.</p></div></div>
+                  {% for somecustomer in awaiting_customer %}
+                  <div class="activity-item">
+                    <span class="activity-dot bg-info"></span>
+                    <div>
+                      <a href="{{ url_for('ticket', id=somecustomer.id) }}" class="content-link">
+                        <p class="mb-1 fw-semibold">{{ somecustomer.subject }}</p>
+                        <p class="text-muted small mb-0">{{somecustomer.name.split()[0]}}</p>
+                        <p class="text-muted small mb-0">{{ somecustomer.created_at|sao_paulo_datetime }}</p>
+                      </a>
+                    </div>
+                  </div>
+                  {% endfor %}
+                  {% if not awaiting_customer %}
+                  <p class="text-muted small mb-0">Sem Ticket aguardando cliente.</p>
+                  {% endif %}
                 </div>
               </div>
             </div>
@@ -89,16 +113,25 @@
                 </div>
 
                 <div class="activity-list">
-                  <div class="activity-item"><span class="activity-dot bg-primary"></span><div><p class="mb-1 fw-semibold">New campaign launched</p><p class="text-muted small mb-0">Marketing team published the May offer.</p></div></div>
-                  <div class="activity-item"><span class="activity-dot bg-success"></span><div><p class="mb-1 fw-semibold">Payment batch cleared</p><p class="text-muted small mb-0">246 invoices were processed successfully.</p></div></div>
-                  <div class="activity-item"><span class="activity-dot bg-warning"></span><div><p class="mb-1 fw-semibold">Support queue rising</p><p class="text-muted small mb-0">Average first response time is 18 minutes.</p></div></div>
+                  {% for somesolved in solved %}
+                  <div class="activity-item">
+                    <span class="activity-dot bg-success"></span>
+                    <div>
+                      <a href="{{ url_for('ticket', id=somesolved.id) }}" class="content-link">
+                        <p class="mb-1 fw-semibold">{{ somesolved.subject }}</p>
+                        <p class="text-muted small mb-0">{{somesolved.name.split()[0]}}</p>
+                        <p class="text-muted small mb-0">{{ somesolved.created_at|sao_paulo_datetime }}</p>
+                      </a>
+                    </div>
+                  </div>
+                  {% endfor %}
+                  {% if not solved %}
+                  <p class="text-muted small mb-0">Sem Tickets resolvidos.</p>
+                  {% endif %}
                 </div>
               </div>
             </div>
-
+            <a class="btn btn-primary btn-sm" href="{{url_for("all_tickets")}}" ><i class="bi bi-eye" aria-hidden="true"></i> Todos os Chamados</a>
           </section>
         </div>
-    
-
-
 {% endblock content %}

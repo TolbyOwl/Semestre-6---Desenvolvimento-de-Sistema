@@ -108,10 +108,11 @@ def dash():
 def tickets():
     if "user" not in session: 
         return redirect(url_for("login"))
-    new=supabase_admin.table('Ticket').select("*").eq("status","Novo").execute()
-    in_progress=supabase_admin.table('Ticket').select("*").eq("status","Em andamento").order('created_at', desc=True).execute()
-    awaiting_customer=supabase_admin.table('Ticket').select("*").eq("status","Aguardando").execute()
-    solved=supabase_admin.table('Ticket').select("*").eq("status","Resolvido").execute()
+    row_limit=3
+    new=supabase_admin.table('Ticket').select("*").eq("status","Novo").order('created_at', desc=True).limit(row_limit).execute()
+    in_progress=supabase_admin.table('Ticket').select("*").eq("status","Em andamento").order('created_at', desc=True).limit(row_limit).execute()
+    awaiting_customer=supabase_admin.table('Ticket').select("*").eq("status","Aguardando").order('created_at', desc=True).limit(row_limit).execute()
+    solved=supabase_admin.table('Ticket').select("*").eq("status","Resolvido").order('created_at', desc=True).limit(row_limit).execute()
     return render_template('it_dash/tickets.html',new=new.data, in_progress=in_progress.data, awaiting_customer=awaiting_customer.data,solved=solved.data)
 
 @app.route('/new_ticket',methods=["GET","POST"])
@@ -142,6 +143,11 @@ def ticket(id):
     if not response.data:
         return render_template("errors/404.html"), 404
     return render_template('it_dash/open_tickets.html')
+
+@app.route('/tickets/all')
+def all_tickets():
+    tickets= supabase_admin.table('Ticket').select("*").order('created_at', desc=True).execute()
+    return render_template('it_dash/all_tickets.html',tickets=tickets.data)
 
 #Base de conhecimento
 
