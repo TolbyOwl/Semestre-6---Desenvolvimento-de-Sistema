@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect,  url_for, session, jsonify
 from supabase import create_client, Client
+from supabase_auth.errors import AuthError
 from dotenv import load_dotenv
 from datetime import datetime, timezone
 import os
@@ -9,7 +10,6 @@ from zoneinfo import ZoneInfo
 url=os.getenv("SUPABASE_URL")
 key=os.getenv("ANON_KEY")
 
-supabase: Client = create_client(url, key)
 supabase_admin = create_client(url, os.getenv("SERVICE_ROLE_KEY"))
 
 app = Flask(__name__)
@@ -56,11 +56,12 @@ def login():
     if request.method == "POST":
         email = request.form["email"]
         password = request.form["password"]
+        auth_client: Client = create_client(url, key)
 
         try:
-            response = supabase.auth.sign_in_with_password({"email": email, "password": password})
-        except:
-            return render_template("login.html", message="Usuário ou senha inválido")
+            response = auth_client.auth.sign_in_with_password({"email": email, "password": password})
+        except AuthError:
+            return render_template("session/login.html", message="Usuário ou senha inválido.")
         if response.user:
             session["user"] = response.user.email
             session["user_id"] = response.user.id
@@ -71,7 +72,65 @@ def login():
 
 @app.route('/forgot_password', methods=["GET","POST"])
 def forgot_password():
+    if request.method == "POST":
+        email = request.form.get("email", "").strip()
+        if not email:
+            return render_template(
+                "session/forgot-password.html",
+                message="Enter an email address.",
+                message_type="danger",
+            )
+
+        auth_client: Client = create_client(url, key)
+        try:
+            auth_client.auth.reset_password_for_email(
+                email,
+                {"redirect_to": url_for("reset_password", _external=True)},
+            )
+        except AuthError:
+            return render_template(
+                "session/forgot-password.html",
+                message="We couldn't send the reset link. Please try again.",
+                message_type="danger",
+            )
+
+        return render_template(
+            "session/forgot-password.html",
+            message="If an account uses that email, a password reset link has been sent.",
+            message_type="success",
+        )
     return render_template('session/forgot-password.html')
+
+@app.route('/reset_password', methods=["GET", "POST"])
+def reset_password():
+    if request.method == "GET":
+        return render_template("session/reset-password.html")
+
+    payload = request.get_json(silent=True)
+    if not isinstance(payload, dict):
+        return jsonify(error="Invalid reset request."), 400
+
+    access_token = payload.get("access_token")
+    refresh_token = payload.get("refresh_token")
+    new_password = payload.get("password")
+    if (
+        not isinstance(access_token, str)
+        or len(access_token.split(".")) != 3
+        or not isinstance(refresh_token, str)
+        or not refresh_token
+        or not isinstance(new_password, str)
+        or len(new_password) < 6
+    ):
+        return jsonify(error="O link para redefinição não é válido."), 400
+
+    auth_client: Client = create_client(url, key)
+    try:
+        auth_client.auth.set_session(access_token, refresh_token)
+        auth_client.auth.update_user({"password": new_password})
+    except AuthError:
+        return jsonify(error="Este link para redefinição é inválido ou expirou. Solicite um novo."), 400
+
+    return jsonify(message="Sua senha foi alterada.")
 
 @app.route('/register', methods=["GET","POST"])
 def register():
@@ -80,14 +139,14 @@ def register():
         password = request.form["password"]
         name = request.form["name"]
 
-        response = supabase.auth.sign_up(\
+        auth_client: Client = create_client(url, key)
+        response = auth_client.auth.sign_up(\
             {"email": email, "password": password, "options": {"data": {"name": name}}})
     return render_template('session/register.html')
 
 @app.route("/logout")
 def logout():
     session.pop("user", None)
-    supabase.auth.sign_out()
     return redirect(url_for("login"))
 
 #Páginas da Dashboard (pós-login apenas)
@@ -178,11 +237,28 @@ def document(id):
 
 ###########
 
-@app.route('/config')
+@app.route('/config', methods=["GET","POST"])
 def config():
     if "user" not in session: 
         return redirect(url_for("login"))
+    if request.method=="GET":
+        pass
+        # supabase_admin.auth.admin.get_user_by_id(session["user_id"]).user.
     return render_template('it_dash/config.html')
+
+@app.route('/change_password', methods=["POST"])
+def change_password():
+    if "user" not in session:
+        return redirect(url_for("login"))
+    new_password=request.form["newPassword"]
+    current_password=request.form["oldPassword"]
+    auth_client: Client = create_client(url, key)
+    try:
+        auth_client.auth.sign_in_with_password({"email":session["user"],"password":current_password})
+        auth_client.auth.update_user({"password": new_password})
+    except AuthError:
+        return render_template("it_dash/config.html",message="Senha atual incorreta.")
+    return redirect(url_for("config"))
 
 #Erros
 
