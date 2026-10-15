@@ -160,7 +160,7 @@ a {
 .sidebar-nav .nav-link:focus,
 .sidebar-nav .nav-link.active {
   background: var(--admin-sidebar-soft);
-  color: #ffffff;
+  color: #f1eeee;
 }
 
 .sidebar-nav .nav-link:hover,
