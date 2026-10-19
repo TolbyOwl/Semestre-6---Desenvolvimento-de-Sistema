@@ -146,20 +146,27 @@
               <i class="bi bi-chat-dots-fill text-primary me-2"></i>Simulador de
               Chat - Cliente
             </h5>
-            <small class="text-muted"
-              >Chamado ID:
-              <span id="current-ticket-label">{{ ticket_id }}</span></small
-            >
+            <small class="text-muted">
+              Chamado ID:
+              <span id="current-ticket-label" class="fw-bold"
+                >{{ ticket_id }}</span
+              >
+              {% if ticket and ticket.status %} | Status:
+              <span
+                class="badge {% if ticket.status == 'Resolvido' %}bg-success{% elif ticket.status == 'Em andamento' %}bg-warning text-dark{% elif ticket.status == 'Aguardando' %}bg-info text-dark{% else %}bg-primary{% endif %}"
+                >{{ ticket.status }}</span
+              >
+              {% endif %}
+            </small>
           </div>
           <div class="d-flex align-items-center gap-2">
-            <input
-              type="text"
-              id="ticket-id-input"
-              class="form-control form-control-sm"
-              style="width: 80px"
-              value="{{ ticket_id }}"
-              title="Alterar Ticket ID"
-            />
+            <a
+              href="{{ url_for('test_chat') }}"
+              class="btn btn-sm btn-outline-primary"
+              title="Iniciar novo chamado com ID automático"
+            >
+              <i class="bi bi-plus-circle me-1"></i>+ Novo Chat
+            </a>
             <span id="client-status" class="badge bg-secondary"
               >Conectando...</span
             >
@@ -221,25 +228,26 @@
     <!-- SUPABASE JS SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-      const TEST_SUPABASE_URL = "{{ config['TEST_SUPABASE_URL'] or '' }}";
-      const TEST_ANON_KEY = "{{ config['TEST_ANON_KEY'] or '' }}";
+      const SUPABASE_URL = "{{ config['SUPABASE_URL'] or '' }}";
+      const SUPABASE_KEY = "{{ config['SUPABASE_KEY'] or '' }}";
 
-      const supabaseClient = supabase.createClient(
-        TEST_SUPABASE_URL,
-        TEST_ANON_KEY,
-      );
+      const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
       const chatsList = document.getElementById("chats-list");
       const clientForm = document.getElementById("client-form");
       const clientTextarea = document.getElementById("client-textarea");
-      const ticketIdInput = document.getElementById("ticket-id-input");
       const clientStatus = document.getElementById("client-status");
 
       let currentTicketId = "{{ ticket_id or '1' }}";
       let channel = null;
 
       function scrollToBottom() {
-        chatsList.scrollTop = chatsList.scrollHeight;
+        if (chatsList) {
+          setTimeout(() => {
+            chatsList.scrollTop = chatsList.scrollHeight;
+          }, 50);
+        }
       }
+      window.addEventListener("DOMContentLoaded", scrollToBottom);
       scrollToBottom();
 
       function renderMessage(msg) {
@@ -294,13 +302,30 @@
           });
       }
 
+      // Canal global para avisar o Painel de Atendimento sobre novos chats em tempo real
+      const globalChannel = supabaseClient.channel("room:tickets-global");
+      globalChannel.subscribe((status) => {
+        if (status === "SUBSCRIBED") {
+          globalChannel.send({
+            type: "broadcast",
+            event: "new_chat",
+            payload: {
+              id: currentTicketId,
+              subject: "Atendimento #" + currentTicketId,
+              name: "Cliente",
+              status: "Novo",
+            },
+          });
+        }
+      });
+
       connectBroadcast(currentTicketId);
 
-      ticketIdInput.addEventListener("change", () => {
-        currentTicketId = ticketIdInput.value.trim();
-        document.getElementById("current-ticket-label").innerText =
-          currentTicketId;
-        connectBroadcast(currentTicketId);
+      clientTextarea.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+          clientForm.dispatchEvent(new Event("submit"));
+        }
       });
 
       clientForm.addEventListener("submit", async (e) => {
@@ -327,7 +352,16 @@
           });
         }
 
-        // 2. Salva no banco de testes
+        // 2. Avisa o painel
+        if (globalChannel) {
+          globalChannel.send({
+            type: "broadcast",
+            event: "ticket_activity",
+            payload: { ticket_id: currentTicketId, content: content },
+          });
+        }
+
+        // 2. Salva no banco
         fetch("/api/send_message", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
