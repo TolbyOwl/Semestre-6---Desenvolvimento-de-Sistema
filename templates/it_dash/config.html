@@ -24,7 +24,7 @@
     <!-- Coluna de cima -->
     <section class="row g-3">
       <div class="col-12 col-xl-6">
-        <form class="panel needs-validation" novalidate>
+        <form id="personalinfo" class="panel needs-validation" method="POST" novalidate>
           <div class="panel-header">
             <div>
               <h2 class="h5 mb-1 section-title">
@@ -39,7 +39,7 @@
             <label class="form-label" for="formName">
               <strong> Nome completo</strong>
             </label>
-            <input class="form-control" id="formName" name="name" required />
+            <input class="form-control" id="formName" name="name" value="{{ personalinfo.fullname }}" required />
             <div class="invalid-feedback">Nome completo requerido.</div>
           </div>
           <!-- E-mail -->
@@ -50,6 +50,8 @@
               class="form-control"
               id="formEmail"
               email="email"
+              name="email"
+              value="{{ personalinfo.email }}"
               required
             />
             <div class="invalid-feedback">Endereço de e-mail requerido.</div>
@@ -63,11 +65,12 @@
               type="text"
               class="form-control"
               id="telefone"
-              name="telefone"
+              name="phone"
               placeholder="(11) 99999-9999"
               maxlength="15"
               inputmode="numeric"
               autocomplete="tel"
+              value="{{ personalinfo.phone }}"
               required
             />
 
@@ -76,17 +79,19 @@
           <!-- Cargo -->
           <div class="col-md-12 mt-3">
             <label class="form-label" for="formCargo">
-            <strong>Cargo/Setor</strong></label
+            <strong>Setor</strong></label
             ><input
               class="form-control"
               id="formCargo"
               cargo="cargo"
+              name="sector"
+              value="{{ personalinfo.sector }}"
               required
             />
             <div class="invalid-feedback">Cargo requerido.</div>
           </div>
           <!-- Botão de salvar -->
-          <button class="btn btn-primary mt-3" type="submit">
+          <button class="btn btn-primary mt-3" form="personalinfo" type="submit">
             <i class="bi bi-check2-circle" aria-hidden="true"></i> Salvar
             configuração
           </button>

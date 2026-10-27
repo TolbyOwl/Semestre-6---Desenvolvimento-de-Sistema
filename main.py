@@ -241,10 +241,28 @@ def document(id):
 def config():
     if "user" not in session: 
         return redirect(url_for("login"))
-    if request.method=="GET":
-        pass
-        # supabase_admin.auth.admin.get_user_by_id(session["user_id"]).user.
-    return render_template('it_dash/config.html')
+    if request.method=="POST":
+        name=request.form["name"]
+        email=request.form["email"]
+        phone=request.form["phone"]
+        sector=request.form["sector"]
+        supabase_admin.auth.admin.update_user_by_id(session["user_id"],{
+            "email": email,
+            "user_metadata": {
+                "name": name,
+                "phone": phone,
+                "sector": sector
+            }
+        })
+        session["user_name"]=name
+    user_data=supabase_admin.auth.admin.get_user_by_id(session["user_id"]).user.user_metadata
+    personalinfo={
+        "email": user_data.get("email"),
+        "fullname": user_data.get("name"),
+        "phone": user_data.get("phone", ""),
+        "sector": user_data.get("sector", "")
+    }
+    return render_template('it_dash/config.html', personalinfo=personalinfo)
 
 @app.route('/change_password', methods=["POST"])
 def change_password():
