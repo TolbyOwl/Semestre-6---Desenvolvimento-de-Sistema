@@ -12,85 +12,246 @@
           <p class="eyebrow mb-1"></p>
           <h1 class="h3 mb-1">Configuração</h1>
           <p class="text-muted mb-0">
-            Personalize os padrões do espaço de trabalho, as opções de segurança e as preferências de notificação.
+            Personalize os padrões do espaço de trabalho, as opções de segurança
+            e as preferências de notificação.
           </p>
         </div>
       </div>
+      {% if message %}
+      <div class="alert alert-danger" role="alert">{{ message }}</div>
+      {% endif %}
     </div>
-
+    <!-- Coluna de cima -->
     <section class="row g-3">
       <div class="col-12 col-xl-6">
-        <form class="panel needs-validation" novalidate>
+        <form id="personalinfo" class="panel needs-validation" method="POST" novalidate>
           <div class="panel-header">
             <div>
               <h2 class="h5 mb-1 section-title">
                 <i class="bi bi-sliders" aria-hidden="true"></i
-                ><span>Configuração Geral</span>
+                ><span>Informações pessoais</span>
               </h2>
-              <p class="text-muted mb-0">
-                Configure a identidade e os padrões do espaço de trabalho.
-              </p>
+              <p class="text-muted mb-0">Mantenha seus dados atualizados.</p>
             </div>
           </div>
-          <div class="mb-3">
-            <label class="form-label" for="workspaceName">Nome do espaço de trabalho</label
+          <!-- Nome completo -->
+          <div class="col-md-12 mt-3">
+            <label class="form-label" for="formName">
+              <strong> Nome completo</strong>
+            </label>
+            <input class="form-control" id="formName" name="name" value="{{ personalinfo.fullname }}" required />
+            <div class="invalid-feedback">Nome completo requerido.</div>
+          </div>
+          <!-- E-mail -->
+          <div class="col-md-12 mt-3">
+            <label class="form-label" for="formEmail">
+              <strong> E-mail</strong> </label
             ><input
               class="form-control"
-              id="workspaceName"
-              type="text"
-              value="adminHMD Workspace"
+              id="formEmail"
+              email="email"
+              name="email"
+              value="{{ personalinfo.email }}"
               required
             />
-            <div class="invalid-feedback">O nome do espaço de trabalho é obrigatório.</div>
+            <div class="invalid-feedback">Endereço de e-mail requerido.</div>
           </div>
-          <div class="mb-3">
-            <label class="form-label" for="defaultLanguage"
-              >Idioma padrão</label
-            ><select class="form-select" id="defaultLanguage">
-              <option selected>Inglês</option>
-              <option>Português</option>
-              <option>Espanhol</option>
-            </select>
+          <!-- Telefone -->
+          <div class="mb-3 mt-3">
+            <label for="telefone" class="form-label">
+              <strong>Telefone</label></strong>
+
+            <input
+              type="text"
+              class="form-control"
+              id="telefone"
+              name="phone"
+              placeholder="(11) 99999-9999"
+              maxlength="15"
+              inputmode="numeric"
+              autocomplete="tel"
+              value="{{ personalinfo.phone }}"
+              required
+            />
+
+            <div class="invalid-feedback">Telefone requerido.</div>
           </div>
-          <button class="btn btn-primary" type="submit">
-            <i class="bi bi-check2-circle" aria-hidden="true"></i> Salvar configuração
+          <!-- Cargo -->
+          <div class="col-md-12 mt-3">
+            <label class="form-label" for="formCargo">
+            <strong>Setor</strong></label
+            ><input
+              class="form-control"
+              id="formCargo"
+              cargo="cargo"
+              name="sector"
+              value="{{ personalinfo.sector }}"
+              required
+            />
+            <div class="invalid-feedback">Cargo requerido.</div>
+          </div>
+          <!-- Botão de salvar -->
+          <button class="btn btn-primary mt-3" form="personalinfo" type="submit">
+            <i class="bi bi-check2-circle" aria-hidden="true"></i> Salvar
+            configuração
           </button>
         </form>
       </div>
+
+      <!-- Notificações -->
       <div class="col-12 col-xl-6">
         <div class="panel h-100">
           <div class="panel-header">
             <div>
               <h2 class="h5 mb-1 section-title">
-                <i class="bi bi-toggles2" aria-hidden="true"></i
-                ><span>preferências</span>
+                <i class="bi bi-bell" aria-hidden="true"></i>
+                <span>Notificações</span>
               </h2>
+
               <p class="text-muted mb-0">
-                Gerencie notificações e opções de segurança.
+                Gerencie como deseja receber os avisos do UniDesk.
               </p>
             </div>
           </div>
+
           <div class="settings-list">
-            <label class="settings-row"
-              ><span
-                ><strong>Alertas por e-mail</strong
-                ><small>Receba atualizações importantes da conta.</small></span
-              ><input class="form-check-input" type="checkbox" checked
-            /></label>
-            <label class="settings-row"
-              ><span
-                ><strong>Reportes semanais</strong
-                ><small>Envie relatórios resumidos todas as segundas-feiras.</small></span
-              ><input class="form-check-input" type="checkbox" checked
-            /></label>
-            <label class="settings-row"
-              ><span
-                ><strong>Autenticação multifator</strong
-                ><small>Exigir verificação adicional para administradores.</small></span
-              ><input class="form-check-input" type="checkbox"
-            /></label>
+            <!-- Atualização de chamado -->
+            <label class="settings-row">
+              <span>
+                <strong>Atualizações de chamados</strong>
+                <small>
+                  Receba uma notificação quando um chamado for atualizado.
+                </small>
+              </span>
+
+              <input class="form-check-input" type="checkbox" checked />
+            </label>
+            <!-- Chamado atribuído -->
+            <label class="settings-row">
+              <span>
+                <strong>Chamado atribuído</strong>
+                <small>
+                  Seja avisado quando um chamado for atribuído a você.
+                </small>
+              </span>
+
+              <input class="form-check-input" type="checkbox" checked />
+            </label>
+            <!-- Mensagens -->
+            <label class="settings-row">
+              <span>
+                <strong>Novas mensagens</strong>
+                <small>
+                  Receba avisos quando houver uma nova mensagem em seus
+                  chamados.
+                </small>
+              </span>
+
+              <input class="form-check-input" type="checkbox" checked />
+            </label>
+            <!-- Alteração de status -->
+            <label class="settings-row">
+              <span>
+                <strong>Alteração de status</strong>
+                <small>
+                  Receba notificações quando o status de um chamado mudar.
+                </small>
+              </span>
+
+              <input class="form-check-input" type="checkbox" checked />
+            </label>
+            <!-- Notificações por e-mail -->
+            <label class="settings-row">
+              <span>
+                <strong>Notificações por e-mail</strong>
+                <small>
+                  Receba atualizações dos seus chamados diretamente por e-mail.
+                </small>
+              </span>
+
+              <input class="form-check-input" type="checkbox" />
+            </label>
           </div>
         </div>
+      </div>
+      
+    </section>
+
+    <!-- Coluna de baixo -->
+    <section class="row g-3 mt-3 justify-content-center">
+      <!-- Senhas -->
+      <div class="col-12 col-xl-6">
+        <form id="passwordChange" class="panel needs-validation" action="{{ url_for('change_password') }}" method="post">
+          <div class="panel-header">
+            <div>
+              <h2 class="h5 mb-1 section-title">
+                <i class="bi bi-sliders" aria-hidden="true"></i>
+                <span>
+                  <strong>Alterar Senha</strong></span>
+              </h2>
+
+              <p class="text-muted mb-0">
+                Crie uma senha forte para sua segurança.
+              </p>
+            </div>
+          </div>
+
+          <!-- Senha antiga -->
+          <div class="col-md-12 mt-3">
+            <label class="form-label" for="senhaAntiga">
+              <strong>Senha Antiga</strong></label>
+
+            <input
+              class="form-control"
+              type="password"
+              id="oldPassword"
+              name="oldPassword"
+              required
+            />
+            <div class="invalid-feedback">Senha antiga requerida.</div>
+          </div>
+
+          <!-- Nova Senha -->
+          <div class="col-md-12 mt-3">
+            <label class="form-label" for="novaSenha">
+              <strong> Nova senha</strong></label>
+            <input
+              class="form-control"
+              type="password"
+              id="newPassword"
+              name="newPassword"
+              required
+            />
+            <div class="invalid-feedback">Nova senha requerida.</div>
+          </div>
+
+          <!-- Confirmar nova senha -->
+          <div class="col-md-12 mt-3">
+            <label class="form-label" for="confirmarSenha">
+              <strong>Confirmar nova senha</strong>
+            </label>
+
+            <input
+              class="form-control"
+              type="password"
+              id="confirmedPassword"
+              name="confirmedPassword"
+              required
+            />
+
+            <div class="invalid-feedback">
+              Confirmação da nova senha requerida.
+            </div>
+          </div>
+
+          <!-- Botão de salvar -->
+          <div class="d-flex justify-content-center">
+            <button class="btn btn-primary mt-3" type="submit" form="passwordChange">
+              <i class="bi bi-check2-circle" aria-hidden="true"></i>
+              Alterar senha
+            </button>
+          </div>
+        </form>
       </div>
     </section>
   </div>
