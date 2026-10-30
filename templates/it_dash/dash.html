@@ -27,10 +27,7 @@ block content %}
               <i class="bi bi-ticket-perforated" aria-hidden="true"></i>
             </span>
           </div>
-          <div class="metric-value">XXXXXXX</div>
-          <div class="metric-meta">
-            <span class="text-success"> XXXXXXX </span>
-          </div>
+          <div class="metric-value">{{count_tickets.open}}</div>
         </article>
       </div>
       <!-- CARD: USUÁRIOS -->
@@ -43,10 +40,7 @@ block content %}
               <i class="bi bi-people" aria-hidden="true"></i>
             </span>
           </div>
-          <div class="metric-value">XXXXXXX</div>
-          <div class="metric-meta">
-            <span class="text-success"> XXXXXXX </span>
-          </div>
+          <div class="metric-value">{{count_active_users}}</div>
         </article>
       </div>
       <!-- CARD: TICKETS -->
@@ -60,11 +54,7 @@ block content %}
             </span>
           </div>
 
-          <div class="metric-value">XXXXXXXXX</div>
-
-          <div class="metric-meta">
-            <span> XXXXXXXXXXXX </span>
-          </div>
+          <div class="metric-value">{{count_tickets.solved}}</div>
         </article>
       </div>
 
@@ -87,137 +77,16 @@ block content %}
        ====================================-->
       <div class="table-responsive">
         <table class="table align-middle mb-0">
-          <thead>
-            <tr>
-              <th scope="col">Usuário</th>
-              <th scope="col">Função</th>
-              <th scope="col">Time</th>
-              <th scope="col">Status</th>
-              <th scope="col">Ingressou</th>
-              <th scope="col" class="text-end">Ação</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>
-                <div class="d-flex align-items-center gap-2">
-                  <img
-                    class="avatar-img avatar-sm"
-                    src="../assets/images/avatar/avatar-1.jpg"
-                    alt="Sarah Ahmed"
-                  />
-                  <div>
-                    <p class="fw-semibold mb-0">Sarah Ahmed</p>
-                    <p class="text-muted small mb-0">sarah@example.com</p>
-                  </div>
-                </div>
-              </td>
-              <td>Admin</td>
-              <td>Operações</td>
-              <td><span class="badge text-bg-success">Ativo</span></td>
-              <td>Jan 12, 2026</td>
-              <td class="text-end">
-                <a class="btn btn-light btn-sm" href="user-details.html"
-                  >Visualização</a
-                >
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <div class="d-flex align-items-center gap-2">
-                  <img
-                    class="avatar-img avatar-sm"
-                    src="../assets/images/avatar/avatar-2.jpg"
-                    alt="Rafi Khan"
-                  />
-                  <div>
-                    <p class="fw-semibold mb-0">Rafi Khan</p>
-                    <p class="text-muted small mb-0">rafi@example.com</p>
-                  </div>
-                </div>
-              </td>
-              <td>Gerente</td>
-              <td>Vendas</td>
-              <td><span class="badge text-bg-success">Ativo</span></td>
-              <td>Fev 03, 2026</td>
-              <td class="text-end">
-                <a class="btn btn-light btn-sm" href="user-details.html"
-                  >Visualização</a
-                >
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <div class="d-flex align-items-center gap-2">
-                  <img
-                    class="avatar-img avatar-sm"
-                    src="../assets/images/avatar/avatar-3.jpg"
-                    alt="Nadia Islam"
-                  />
-                  <div>
-                    <p class="fw-semibold mb-0">Nadia Islam</p>
-                    <p class="text-muted small mb-0">nadia@example.com</p>
-                  </div>
-                </div>
-              </td>
-              <td>Editor</td>
-              <td>Content</td>
-              <td><span class="badge text-bg-warning">Pendente</span></td>
-              <td>Mar 18, 2026</td>
-              <td class="text-end">
-                <a class="btn btn-light btn-sm" href="user-details.html"
-                  >Visualização</a
-                >
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <div class="d-flex align-items-center gap-2">
-                  <img
-                    class="avatar-img avatar-sm"
-                    src="../assets/images/avatar/avatar-4.jpg"
-                    alt="Mina Torres"
-                  />
-                  <div>
-                    <p class="fw-semibold mb-0">Mina Torres</p>
-                    <p class="text-muted small mb-0">mina@example.com</p>
-                  </div>
-                </div>
-              </td>
-              <td>Vizualizador</td>
-              <td>Financeiro</td>
-              <td><span class="badge text-bg-secondary">Suspenso</span></td>
-              <td>Abr 07, 2026</td>
-              <td class="text-end">
-                <a class="btn btn-light btn-sm" href="user-details.html"
-                  >Visualização</a
-                >
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <div class="d-flex align-items-center gap-2">
-                  <img
-                    class="avatar-img avatar-sm"
-                    src="../assets/images/avatar/avatar-5.jpg"
-                    alt="Jon Oliver"
-                  />
-                  <div>
-                    <p class="fw-semibold mb-0">Jon Oliver</p>
-                    <p class="text-muted small mb-0">jon@example.com</p>
-                  </div>
-                </div>
-              </td>
-              <td>Analista</td>
-              <td>Dados</td>
-              <td><span class="badge text-bg-success">Ativo</span></td>
-              <td>Abr 22, 2026</td>
-              <td class="text-end">
-                <a class="btn btn-light btn-sm" href="user-details.html"
-                  >Visualização</a
-                >
-              </td>
-            </tr>
+            <div class="table-responsive"><table class="table align-middle mb-0" id="ordersTable" data-searchable-table><thead><tr><th>#</th><th>Assunto</th><th>Cliente</th><th>Data de criação</th><th>Status</th><th class="text-end"></th></tr></thead><tbody>
+              {% for recent_ticket in recent_tickets %}
+              {% set badge_classes = {
+                  "Novo": "text-bg-primary",
+                  "Em andamento": "text-bg-info",
+                  "Aguardando": "text-bg-warning",
+                  "Resolvido": "text-bg-success"
+                } %}
+              <tr><td class="fw-semibold">#{{ recent_ticket.id }}</td><td><div class="table-media"><span>{{ recent_ticket.subject }}</span></div></td><td>{{ recent_ticket.name }}</td><td>{{ recent_ticket.created_at|sao_paulo_datetime }}</td><td><span class="badge {{ badge_classes.get(recent_ticket.status, 'text-bg-secondary') }}">{{ recent_ticket.status }}</span></td><td class="text-end"><a class="content-link" href="{{url_for("ticket",id=recent_ticket.id)}}"><button class="btn btn-light btn-sm" type="button">Abrir</button></a></td></tr>
+              {% endfor %}
           </tbody>
         </table>
       </div>

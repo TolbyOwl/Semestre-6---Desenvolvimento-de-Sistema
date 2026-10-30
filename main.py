@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from datetime import datetime, timezone
 import os
 from zoneinfo import ZoneInfo
+import math
 
 #load_dotenv() # inicializando o arquivo .env com as credenciais do supabase
 url=os.getenv("SUPABASE_URL")
@@ -152,16 +153,60 @@ def logout():
 #Páginas da Dashboard (pós-login apenas)
 
 @app.route('/users')
-def users():
+def users(requested_page=None):
     if "user" not in session: 
         return redirect(url_for("login"))
-    return render_template('it_dash/users.html')
+    count_response = supabase_admin.rpc("get_total_auth_users").execute()
+    total_users = count_response.data 
+
+    per_page = 20
+    total_pages = math.ceil(total_users / per_page)
+
+    requested_page=1 if requested_page==None else requested_page
+    users=[]
+    if requested_page > total_pages or requested_page < 1:
+        print("Error: # de páginas inválido")
+    else:
+        users=supabase_admin.auth.admin.list_users(
+            page=requested_page,
+            per_page=per_page
+        )
+    personals = []
+    for user in users:
+        personal={
+            "email": user.email,
+            "name": user.user_metadata.get("name"),
+            "sector": user.user_metadata.get("sector"),
+            "status":user.user_metadata.get("status"),
+            "started":user.created_at
+        }
+        personals.append(personal)
+    print(personals[0])
+    return render_template('it_dash/users.html', personals=personals,request_page=requested_page,total_pages=total_pages)
 
 @app.route('/dash')
 def dash():
     if "user" not in session: 
         return redirect(url_for("login"))
-    return render_template('it_dash/dash.html')
+    tickets_count = supabase_admin.table('Ticket').select("status").execute()
+    print(tickets_count.data)
+    count_tickets = {
+        "open": len([
+            ticket for ticket in tickets_count.data 
+            if ticket.get("status") in ["Novo", "Em andamento", "Aguardando"]
+        ]),
+        "solved": len([
+            ticket for ticket in tickets_count.data 
+            if ticket.get("status") == "Resolvido"
+        ])
+    }
+    active_users= supabase_admin.auth.admin.list_users()
+    count_active_users=0
+    for user in active_users:
+        if user.user_metadata.get("status") == "Ativo":
+            count_active_users += 1
+    recent_tickets = supabase_admin.table('Ticket').select("*").order('created_at', desc=True).limit(5).execute()
+    return render_template('it_dash/dash.html', count_tickets=count_tickets, count_active_users=count_active_users,recent_tickets=recent_tickets.data)
 
 @app.route('/tickets')
 def tickets():

@@ -25,11 +25,7 @@
             ><i class="bi bi-people" aria-hidden="true"></i
           ></span>
         </div>
-        <div class="metric-value">8.742</div>
-        <div class="metric-meta">
-          <span class="text-success">+5.1%</span>
-          <span>Esse mês</span>
-        </div>
+        <div class="metric-value">{{ personals | length }}</div>
       </article>
     </div>
 
@@ -41,27 +37,19 @@
             ><i class="bi bi-check2-circle" aria-hidden="true"></i
           ></span>
         </div>
-        <div class="metric-value">7.980</div>
-        <div class="metric-meta">
-          <span class="text-success">91%</span>
-          <span>contas saudáveis</span>
-        </div>
+        <div class="metric-value">{{ personals | selectattr("status", "equalto", "Ativo") | list | length }}</div>
       </article>
     </div>
 
     <div class="col-12 col-md-6 col-xl-4">
       <article class="metric-card metric-danger">
         <div class="metric-top">
-          <span class="metric-label">Suspenso</span>
+          <span class="metric-label">Inativo</span>
           <span class="metric-icon"
             ><i class="bi bi-slash-circle" aria-hidden="true"></i
           ></span>
         </div>
-        <div class="metric-value">38</div>
-        <div class="metric-meta">
-          <span class="text-danger">4</span>
-          <span>marcado hoje</span>
-        </div>
+        <div class="metric-value">{{ personals | selectattr("status", "equalto", "Inativo") | list | length }}</div>
       </article>
     </div>
   </section>
@@ -81,7 +69,7 @@
         <input
           class="form-control form-control-sm table-search"
           type="search"
-          placeholder="Search users"
+          placeholder="Procurar usuário na lista"
           data-table-search="usersTable"
           aria-label="Search users"
         />
@@ -104,6 +92,11 @@
           </tr>
         </thead>
         <tbody>
+          {% for personal in personals %}
+          {% set badge_classes={
+              "Ativo": "text-bg-success",
+              "Inativo": "text-bg-danger",
+            } %}
           <tr>
             <td>
               <div class="d-flex align-items-center gap-2">
@@ -113,122 +106,40 @@
                   alt="Sarah Ahmed"
                 />
                 <div>
-                  <p class="fw-semibold mb-0">Sarah Ahmed</p>
-                  <p class="text-muted small mb-0">sarah@example.com</p>
+                  <p class="fw-semibold mb-0">{{ personal.name }}</p>
+                  <p class="text-muted small mb-0">{{ personal.email }}</p>
                 </div>
               </div>
             </td>
-            <td>Admin</td>
-            <td>Operação</td>
-            <td><span class="badge text-bg-success">Ativo</span></td>
-            <td>Jan 12, 2026</td>
+            <td>PENDENTE!!!!</td>
+            <td>{{ personal.sector }}</td>
+            <td><span class="badge {{ badge_classes.get(personal.status, 'text-bg-secondary') }}">{{ personal.status }}</span></td>
+            <td>{{ personal.started|sao_paulo_datetime }}</td>
             <td class="text-end">
               <a class="btn btn-light btn-sm" href="user-details.html">View</a>
             </td>
           </tr>
-          <tr>
-            <td>
-              <div class="d-flex align-items-center gap-2">
-                <img
-                  class="avatar-img avatar-sm"
-                  src="../assets/images/avatar/avatar-2.jpg"
-                  alt="Rafi Khan"
-                />
-                <div>
-                  <p class="fw-semibold mb-0">Rafi Khan</p>
-                  <p class="text-muted small mb-0">rafi@example.com</p>
-                </div>
-              </div>
-            </td>
-            <td>Gerente</td>
-            <td>Vendas</td>
-            <td><span class="badge text-bg-success">Ativo</span></td>
-            <td>Fev 03, 2026</td>
-            <td class="text-end">
-              <a class="btn btn-light btn-sm" href="user-details.html">View</a>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <div class="d-flex align-items-center gap-2">
-                <img
-                  class="avatar-img avatar-sm"
-                  src="../assets/images/avatar/avatar-3.jpg"
-                  alt="Nadia Islam"
-                />
-                <div>
-                  <p class="fw-semibold mb-0">Nadia Islam</p>
-                  <p class="text-muted small mb-0">nadia@example.com</p>
-                </div>
-              </div>
-            </td>
-            <td>Editor</td>
-            <td>Content</td>
-            <td><span class="badge text-bg-warning">Pendente</span></td>
-            <td>Mar 18, 2026</td>
-            <td class="text-end">
-              <a class="btn btn-light btn-sm" href="user-details.html">View</a>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <div class="d-flex align-items-center gap-2">
-                <img
-                  class="avatar-img avatar-sm"
-                  src="../assets/images/avatar/avatar-4.jpg"
-                  alt="Mina Torres"
-                />
-                <div>
-                  <p class="fw-semibold mb-0">Mina Torres</p>
-                  <p class="text-muted small mb-0">mina@example.com</p>
-                </div>
-              </div>
-            </td>
-            <td>Inspetor</td>
-            <td>Financeiro</td>
-            <td><span class="badge text-bg-secondary">Suspenso</span></td>
-            <td>Abr 07, 2026</td>
-            <td class="text-end">
-              <a class="btn btn-light btn-sm" href="user-details.html">View</a>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <div class="d-flex align-items-center gap-2">
-                <img
-                  class="avatar-img avatar-sm"
-                  src="../assets/images/avatar/avatar-5.jpg"
-                  alt="Jon Oliver"
-                />
-                <div>
-                  <p class="fw-semibold mb-0">Jon Oliver</p>
-                  <p class="text-muted small mb-0">jon@example.com</p>
-                </div>
-              </div>
-            </td>
-            <td>Analista</td>
-            <td>Dados</td>
-            <td><span class="badge text-bg-success">Ativo</span></td>
-            <td>Abr 22, 2026</td>
-            <td class="text-end">
-              <a class="btn btn-light btn-sm" href="user-details.html">View</a>
-            </td>
-          </tr>
+          {% endfor %}
         </tbody>
       </table>
     </div>
     <div
       class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3 mt-3"
     >
-      <p class="text-muted small mb-0">Usuário 1 a 5 de 124 usuários</p>
+      <p class="text-muted small mb-0">Usuário {{ 1 }} a {{ personals | length }} de {{ personals | length }} usuários</p>
       <nav aria-label="Users pagination">
         <ul class="pagination pagination-sm mb-0">
           <li class="page-item disabled">
-            <a class="page-link" href="#">Anterior</a>
+            <a class="page-link" href="{{ url_for('users', requested_page=request_page - 1) }}">Anterior</a>
           </li>
-          <li class="page-item active"><a class="page-link" href="#">1</a></li>
-          <li class="page-item"><a class="page-link" href="#">2</a></li>
-          <li class="page-item"><a class="page-link" href="#">Próximo</a></li>
+          {% for i in range(1, total_pages + 1) %}
+          <li class="page-item {% if i == request_page %}active{% endif %}">
+            <a class="page-link" href="{{ url_for('users', requested_page=i) }}">{{ i }}</a>
+          </li>
+          {% endfor %}
+          <li class="page-item {% if request_page >= total_pages %}disabled{% endif %}">
+            <a class="page-link" href="{{ url_for('users', requested_page=request_page + 1) }}">Próximo</a>
+          </li>
         </ul>
       </nav>
     </div>
