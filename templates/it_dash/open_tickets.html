@@ -1,280 +1,62 @@
-{% extends "it_dash/basic_dash.html" %} {% block title %}Chamado #{{ ticket.id if ticket else '' }}{% endblock %} {% block content %}
+{% extends "it_dash/basic_dash.html" %} 
+{% block title %}Chamado {%endblock %} 
+{% block content %}
 <div class="container-fluid px-3 px-lg-4 py-4">
-  <style>
-    .ticket-item:focus, .ticket-item:active { outline: none !important; box-shadow: none !important; }
-    .list-group-flush > .ticket-item.active { border-color: rgba(0, 0, 0, 0.125) !important; }
-  </style>
-
-  <div class="page-heading mb-4 d-flex justify-content-between align-items-center">
+  <div class="page-heading mb-4">
     <div class="page-heading-copy">
       <span class="page-icon">
         <i class="bi bi-ui-checks-grid" aria-hidden="true"></i>
       </span>
       <div>
         <h1 class="h3 mb-1">Painel de Atendimento</h1>
-        <p class="text-muted mb-0">Gerenciamento e atualização de tickets em tempo real.</p>
+        <p class="text-muted mb-0">
+          Gerenciamento e atualização de tickets em tempo real.
+        </p>
       </div>
-    </div>
-    <div class="d-flex gap-2">
-      <a class="btn btn-outline-primary btn-sm" href="{{ url_for('test_chat', ticket_id=ticket.id if ticket else None) }}" target="_blank">
-        <i class="bi bi-chat-dots me-1"></i> Chat Teste
-      </a>
-      <a class="btn btn-primary btn-sm" href="{{ url_for('new_ticket') }}">
-        <i class="bi bi-file-earmark-plus" aria-hidden="true"></i> Novo Chamado
-      </a>
     </div>
   </div>
 
   <section class="row g-3">
     <!-- QUADRO 1 -->
     <div class="col-12 col-lg-3">
-      <div class="panel h-100 p-3 border rounded shadow-sm">
-        <h2 class="h5 mb-3 section-title d-flex align-items-center justify-content-between">
-          <span><i class="bi bi-list-task me-2"></i>Chamados</span>
-          <div class="d-flex gap-1">
-            <span class="badge bg-warning text-dark">Abertos: {{ total_abertos }}</span>
-            <span class="badge bg-success">Resolvidos: {{ total_finalizados }}</span>
-          </div>
+      <div class="panel h-100 p-3 border rounded bg-white shadow-sm">
+        <h2
+          class="h5 mb-3 section-title d-flex align-items-center justify-content-between"
+        >
+          <span><i class="bi bi-list-task me-2"></i>Abertos</span>
+          <!-- quantidade -->
+          <span class="badge bg-primary rounded-pill">0</span>
         </h2>
 
-        <div class="list-group list-group-flush overflow-auto" style="max-height: 75vh">
-          {% if open_tickets %} {% for t in open_tickets %}
-          <a
-            href="{{ url_for('ticket', id=t.id) }}"
-            onclick="selecionarTicket('{{ t.id }}', event)"
-            data-ticket-id="{{ t.id }}"
-            class="list-group-item list-group-item-action ticket-item {% if ticket and t.id|string == ticket.id|string %}active{% endif %}"
-          >
-            <div class="fw-bold text-truncate ticket-subject">
-              {{ t.subject or t.title or ('Chamado #' ~ t.id) }}
-            </div>
-            <small class="ticket-meta {% if ticket and t.id|string == ticket.id|string %}text-light{% else %}text-muted{% endif %}">
-              #{{ t.id }} - {{ t.status or 'Novo' }}
-            </small>
-          </a>
-          {% endfor %} {% else %}
-          <div id="empty-tickets" class="text-muted small p-2">Nenhum chamado aberto.</div>
-          {% endif %}
+        <div
+          class="list-group list-group-flush overflow-auto"
+          style="max-height: 75vh"
+        >
+          <!-- lista de chamados -->
         </div>
       </div>
     </div>
 
     <!-- QUADRO 2 -->
     <div class="col-12 col-lg-6">
-      <div class="panel h-100 p-3 border rounded shadow-sm d-flex flex-column" style="min-height: 75vh">
-        <!-- Detalhes do Chamado -->
-        <div class="border-bottom pb-2 mb-3 d-flex justify-content-between align-items-center">
-          <div>
-            <h2 class="h5 mb-0" id="ticket-subject-title">
-              {{ ticket.subject or ticket.title or ('Chamado #' ~ (ticket.id if ticket else '')) }}
-            </h2>
-            {% if ticket %}
-            <small class="text-muted" id="ticket-meta-info">ID: {{ ticket.id }} | Status: <span id="header-status">{{ ticket.status or 'Novo' }}</span></small>
-            {% endif %}
-          </div>
-          <span id="connection-status" class="badge bg-secondary">Conectando Realtime...</span>
-        </div>
-
-        <!-- Área de Conversa -->
-        <div id="chat-messages" class="flex-grow-1 overflow-auto pe-2 mb-3 d-flex flex-column gap-2" style="max-height: 55vh">
-          {% if messages %} {% for m in messages %}
-          <div class="d-flex flex-column {% if m.user_id == session.get('user_id') %}align-items-end{% else %}align-items-start{% endif %}">
-            <span class="small text-muted mb-1" style="font-size: 0.75rem">{{ m.user_name or 'Usuário' }}</span>
-            <div class="p-2 rounded-3 text-break shadow-sm {% if m.user_id == session.get('user_id') %}bg-primary text-white{% else %}bg-light text-dark border{% endif %}" style="max-width: 75%">
-              {{ m.content }}
-            </div>
-          </div>
-          {% endfor %} {% else %}
-          <div id="no-messages" class="text-muted small text-center my-auto">Sem mensagens neste chamado.</div>
-          {% endif %}
-        </div>
-
-        <!-- Formulário para Envio -->
-        <form id="chat-form" class="mt-auto border-top pt-3 d-flex gap-2">
-          <input type="text" id="message-input" class="form-control" placeholder="Digite sua resposta..." required autocomplete="off" />
-          <button type="submit" class="btn btn-primary px-3"><i class="bi bi-send-fill"></i></button>
-        </form>
+      <div
+        class="panel h-100 p-3 border rounded bg-white shadow-sm d-flex flex-column"
+        style="min-height: 75vh"
+      >
+        <!-- detalhes do chamado -->
+        <!-- conversa -->
       </div>
     </div>
 
     <!-- QUADRO 3 -->
     <div class="col-12 col-lg-3">
-      <div class="panel h-100 p-3 border rounded shadow-sm">
-        <h2 class="h5 mb-3 section-title"><i class="bi bi-sliders me-2"></i><span>Gerenciar</span></h2>
-        <p class="small text-muted">Ações operacionais do Help Desk.</p>
-        {% if ticket %}
-        <div class="mb-3">
-          <label class="form-label small fw-bold">Status do Chamado:</label>
-          <select id="status-select" class="form-select form-select-sm" onchange="atualizarStatus(this.value)">
-            <option value="Novo" {% if ticket.status == 'Novo' %}selected{% endif %}>Novo</option>
-            <option value="Em andamento" {% if ticket.status == 'Em andamento' %}selected{% endif %}>Em andamento</option>
-            <option value="Aguardando" {% if ticket.status == 'Aguardando' %}selected{% endif %}>Aguardando</option>
-            <option value="Resolvido" {% if ticket.status == 'Resolvido' %}selected{% endif %}>Resolvido</option>
-          </select>
-        </div>
-        <button onclick="atualizarStatus('Resolvido')" class="btn btn-outline-danger w-100 btn-sm">Finalizar Chamado</button>
-        {% endif %}
+      <div class="panel h-100 p-3 border rounded bg-white shadow-sm">
+        <h2 class="h5 mb-3 section-title">
+          <i class="bi bi-sliders me-2"></i><span>Gerenciar</span>
+        </h2>
+        <!-- edicao do help desk -->
       </div>
     </div>
   </section>
 </div>
-
-<!-- SCRIPT JAVASCRIPT -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-  const SUPABASE_URL = "{{ config['SUPABASE_URL'] or '' }}";
-  const SUPABASE_KEY = "{{ config['SUPABASE_KEY'] or '' }}";
-  let TICKET_ID = "{{ ticket.id if ticket else '' }}";
-  const CURRENT_USER_ID = "{{ session.get('user_id') or 'atendente-id' }}";
-  const CURRENT_USER_NAME = "{{ session.get('user_name') or 'Atendente' }}";
-
-  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-  const messagesContainer = document.getElementById("chat-messages");
-  const chatForm = document.getElementById("chat-form");
-  const messageInput = document.getElementById("message-input");
-  const statusBadge = document.getElementById("connection-status");
-
-  function scrollToBottom() {
-    if (messagesContainer) messagesContainer.scrollTop = messagesContainer.scrollHeight;
-  }
-  scrollToBottom();
-
-  function appendMessageToChat(msg) {
-    const noMsgDiv = document.getElementById("no-messages");
-    if (noMsgDiv) noMsgDiv.remove();
-
-    const isMe = msg.user_id === CURRENT_USER_ID;
-    const msgWrapper = document.createElement("div");
-    msgWrapper.className = `d-flex flex-column ${isMe ? "align-items-end" : "align-items-start"}`;
-    msgWrapper.innerHTML = `
-      <span class="small text-muted mb-1" style="font-size: 0.75rem;">${msg.user_name || "Usuário"}</span>
-      <div class="p-2 rounded-3 text-break shadow-sm ${isMe ? "bg-primary text-white" : "bg-light text-dark border"}" style="max-width: 75%;">
-        ${msg.content}
-      </div>
-    `;
-    messagesContainer.appendChild(msgWrapper);
-    scrollToBottom();
-  }
-
-  // 1. Canal do Chamado Ativo
-  let channel = null;
-  function conectarCanal(id) {
-    if (!id) return;
-    if (channel) supabaseClient.removeChannel(channel);
-    channel = supabaseClient.channel(`room:ticket-${id}`, { config: { broadcast: { self: true } } });
-    channel
-      .on("broadcast", { event: "new_message" }, (payload) => {
-        if (payload?.payload) appendMessageToChat(payload.payload);
-      })
-      .subscribe((status) => {
-        if (statusBadge) {
-          statusBadge.className = status === "SUBSCRIBED" ? "badge bg-success" : "badge bg-secondary";
-          statusBadge.innerText = status === "SUBSCRIBED" ? "Realtime Conectado" : status;
-        }
-      });
-  }
-  if (TICKET_ID) conectarCanal(TICKET_ID);
-
-  // 2. Canal Global (Receber novos chamados na lista)
-  supabaseClient.channel('room:tickets-global')
-    .on('broadcast', { event: 'new_chat' }, (payload) => {
-      const t = payload?.payload;
-      if (!t || document.querySelector(`[data-ticket-id="${t.id}"]`)) return;
-      const list = document.querySelector('.list-group');
-      if (!list) return;
-      const empty = document.getElementById('empty-tickets');
-      if (empty) empty.remove();
-
-      const item = document.createElement('a');
-      item.href = `/tickets/${t.id}`;
-      item.onclick = (e) => selecionarTicket(t.id, e);
-      item.dataset.ticketId = t.id;
-      item.className = 'list-group-item list-group-item-action ticket-item';
-      item.innerHTML = `
-        <div class="fw-bold text-truncate ticket-subject">${t.subject || ('Chamado #' + t.id)}</div>
-        <small class="ticket-meta text-muted">#${t.id} - ${t.status || 'Novo'}</small>
-      `;
-      list.prepend(item);
-    })
-    .subscribe();
-
-  // 3. Selecionar Chamado dinamicamente
-  async function selecionarTicket(id, e) {
-    if (e) e.preventDefault();
-    if (TICKET_ID === String(id)) return;
-    TICKET_ID = String(id);
-    window.history.pushState({}, '', `/tickets/${id}`);
-
-    document.querySelectorAll('.ticket-item').forEach(el => {
-      const isCur = el.dataset.ticketId === String(id);
-      el.classList.toggle('active', isCur);
-      const meta = el.querySelector('.ticket-meta');
-      if (meta) meta.className = isCur ? 'ticket-meta text-light' : 'ticket-meta text-muted';
-    });
-
-    const chatBtn = document.querySelector('a[href*="test_chat"]');
-    if (chatBtn) chatBtn.href = `/test_chat/${id}`;
-
-    conectarCanal(TICKET_ID);
-
-    try {
-      const res = await fetch(`/api/tickets/${id}`);
-      const data = await res.json();
-      if (data?.ticket) {
-        const titleEl = document.getElementById('ticket-subject-title');
-        if (titleEl) titleEl.innerText = data.ticket.subject || ('Chamado #' + id);
-        const metaEl = document.getElementById('ticket-meta-info');
-        if (metaEl) metaEl.innerHTML = `ID: ${id} | Status: <span id="header-status">${data.ticket.status || 'Novo'}</span>`;
-        const selectEl = document.getElementById('status-select');
-        if (selectEl) selectEl.value = data.ticket.status || 'Novo';
-
-        messagesContainer.innerHTML = '';
-        if (data.messages?.length) data.messages.forEach(m => appendMessageToChat(m));
-        else messagesContainer.innerHTML = '<div id="no-messages" class="text-muted small text-center my-auto">Sem mensagens neste chamado.</div>';
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  }
-
-  // 4. Atualizar Status
-  function atualizarStatus(novoStatus) {
-    if (!TICKET_ID) return;
-    fetch(`/tickets/${TICKET_ID}/status`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status: novoStatus })
-    }).then(() => {
-      const headerStatus = document.getElementById('header-status');
-      if (headerStatus) headerStatus.innerText = novoStatus;
-      const curItem = document.querySelector(`[data-ticket-id="${TICKET_ID}"] .ticket-meta`);
-      if (curItem) curItem.innerText = `#${TICKET_ID} - ${novoStatus}`;
-    });
-  }
-
-  // 5. Enviar Mensagem
-  if (chatForm) {
-    chatForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const content = messageInput.value.trim();
-      if (!content || !TICKET_ID) return;
-      messageInput.value = "";
-
-      const msgPayload = {
-        ticket_id: TICKET_ID,
-        user_id: CURRENT_USER_ID,
-        user_name: CURRENT_USER_NAME,
-        content: content,
-        created_at: new Date().toISOString(),
-      };
-
-      if (channel) channel.send({ type: "broadcast", event: "new_message", payload: msgPayload });
-      fetch("/api/send_message", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(msgPayload),
-      });
-    });
-  }
-</script>
 {% endblock content %}

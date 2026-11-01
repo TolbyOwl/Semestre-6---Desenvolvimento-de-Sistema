@@ -260,7 +260,7 @@
         maxHeight: null
       });
 
-      if ("{{ request.endpoint }}" === "document") {
+      {% if request.endpoint == 'document' %}
       const toolbar = editor.next('.note-editor').find('.note-toolbar');
       const editButton = $('#editButton');
       const submitButton = $('#submitButton');
