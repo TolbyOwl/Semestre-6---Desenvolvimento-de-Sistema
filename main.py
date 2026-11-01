@@ -444,7 +444,7 @@ def page_not_found(e):
 #Para testes
 @app.route('/teste')
 def teste():
-    return render_template('it_dash/open_tickets.html')
+    return render_template('errors/500.html')
 
 
 #Execução
