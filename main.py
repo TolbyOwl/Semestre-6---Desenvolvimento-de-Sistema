@@ -7,7 +7,7 @@ import os
 from zoneinfo import ZoneInfo
 import math
 
-#load_dotenv() # inicializando o arquivo .env com as credenciais do supabase
+load_dotenv()
 url=os.getenv("SUPABASE_URL")
 key=os.getenv("ANON_KEY")
 
@@ -15,6 +15,9 @@ supabase_admin = create_client(url, os.getenv("SERVICE_ROLE_KEY"))
 
 app = Flask(__name__)
 app.secret_key = os.getenv("secret_key")  
+app.config['SUPABASE_URL'] = url
+app.config['SUPABASE_KEY'] = key
+
 
 #Variaveis globais
 
@@ -243,10 +246,101 @@ def new_ticket():
 def ticket(id):
     if "user" not in session: 
         return redirect(url_for("login"))
-    response = supabase_admin.table('Ticket').select("*").eq("id",id).single().execute()
-    if not response.data:
-        return render_template("errors/404.html"), 404
-    return render_template('it_dash/open_tickets.html')
+    open_tickets = []
+    try:
+        open_res = supabase_admin.table('Ticket').select("*").order('created_at', desc=True).execute()
+        open_tickets = open_res.data or []
+    except Exception:
+        pass
+
+    total_abertos = sum(1 for t in open_tickets if t.get('status') != 'Resolvido')
+    total_finalizados = len(open_tickets) - total_abertos
+
+    ticket_data = next((t for t in open_tickets if str(t.get('id')) == str(id)), None)
+    if not ticket_data:
+        try:
+            res = supabase_admin.table('Ticket').select("*").eq("id", id).single().execute()
+            ticket_data = res.data
+        except Exception:
+            ticket_data = {'id': id, 'subject': f'Chamado #{id}', 'status': 'Novo', 'name': 'Cliente'}
+
+    messages = []
+    try:
+        m_res = supabase_admin.table('messages').select("*").eq("ticket_id", str(id)).order('created_at', desc=False).execute()
+        messages = m_res.data or []
+    except Exception:
+        pass
+
+    return render_template(
+        'it_dash/open_tickets.html', 
+        ticket=ticket_data, 
+        open_tickets=open_tickets,
+        messages=messages,
+        total_abertos=total_abertos,
+        total_finalizados=total_finalizados
+    )
+
+@app.route('/tickets/<id>/status', methods=['POST'])
+def update_ticket_status(id):
+    supabase_admin.table('Ticket').update({'status': request.json.get('status')}).eq('id', id).execute()
+    return jsonify({'success': True})
+
+@app.route('/api/tickets/<id>')
+def api_ticket(id):
+    if "user" not in session: 
+        return jsonify({'error': 'Não autorizado'}), 401
+    try:
+        t_res = supabase_admin.table('Ticket').select("*").eq("id", id).single().execute()
+        ticket_data = t_res.data
+    except Exception:
+        ticket_data = {'id': id, 'subject': f'Chamado #{id}', 'status': 'Novo', 'name': 'Cliente'}
+
+    try:
+        m_res = supabase_admin.table('messages').select("*").eq("ticket_id", str(id)).order('created_at', desc=False).execute()
+        messages = m_res.data or []
+    except Exception:
+        messages = []
+
+    return jsonify({'ticket': ticket_data, 'messages': messages})
+
+@app.route('/test_chat')
+@app.route('/test_chat/<ticket_id>')
+def test_chat(ticket_id=None):
+    if not ticket_id:
+        res = supabase_admin.table('Ticket').insert({'subject': 'Novo Atendimento', 'name': 'Cliente', 'ticket_type': 'Suporte', 'status': 'Novo'}).execute()
+        return redirect(url_for('test_chat', ticket_id=res.data[0]['id']))
+
+    try:
+        m_res = supabase_admin.table('messages').select("*").eq("ticket_id", str(ticket_id)).order('created_at', desc=False).execute()
+        messages = m_res.data or []
+    except Exception:
+        messages = []
+    return render_template('it_dash/test_chat.html', ticket_id=ticket_id, messages=messages)
+
+@app.route('/api/send_message', methods=['POST'])
+def send_message_api():
+    data = request.json or {}
+    ticket_id = data.get('ticket_id')
+    content = data.get('content')
+    if not ticket_id or not content:
+        return jsonify({'error': 'Campos obrigatórios'}), 400
+
+    try:
+        supabase_admin.table('messages').insert({
+            'ticket_id': str(ticket_id),
+            'user_id': str(data.get('user_id', session.get('user_id', 'anon-user'))),
+            'user_name': str(data.get('user_name', session.get('user_name', 'Atendente'))),
+            'content': content
+        }).execute()
+    except Exception:
+        pass
+    return jsonify({'success': True})
+
+
+@app.route('/tickets/all')
+def all_tickets():
+    tickets= supabase_admin.table('Ticket').select("*").order('created_at', desc=True).execute()
+    return render_template('it_dash/all_tickets.html',tickets=tickets.data)
 
 @app.route('/tickets/all')
 def all_tickets():

@@ -1,0 +1,373 @@
+<!-- https://codepen.io/Designer-Amit-Kumar/pen/wvEOxYO?utm_source=chatgpt.com -->
+<!-- Remodelar com o tempo -->
+<!-- Página temporária de testes de chat -->
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chat de Teste - Simulador</title>
+    <!-- Bootstrap 5 CSS & Icons -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css"
+    />
+
+    <style>
+      .chat-container {
+        margin: 0px 5px;
+      }
+
+      .chat-inner-wrapper {
+        overflow-y: auto;
+        position: relative;
+      }
+
+      .chat-inner-body {
+        padding: 5px;
+        max-height: 70vh;
+      }
+
+      .chat-date {
+        text-align: center;
+        margin: 10px;
+        color: #888;
+        font-size: 13px;
+      }
+
+      .send-messages-wrapper {
+        padding: 10px;
+        width: 100%;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid #dedede;
+      }
+
+      .type-comment-box {
+        width: calc(100% - 120px);
+        margin-right: 10px;
+        border-radius: 3px;
+        min-height: 50px !important;
+        margin-top: -5px;
+      }
+
+      .send-messages-wrapper .btn {
+        height: 45px;
+      }
+
+      .chats-wrapper {
+        overflow-y: auto;
+        scroll-behavior: smooth;
+        padding-right: 10px;
+        overflow-x: hidden;
+        min-height: 350px;
+      }
+
+      .chat-row {
+        display: flex;
+        margin-bottom: 15px;
+      }
+
+      .chat-row .chat-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50px;
+        border: 1px solid #fff;
+      }
+
+      .chat-box {
+        max-width: 60%;
+        margin-left: 10px;
+      }
+
+      .chat-messages-wrap {
+        background: #f5f5f5;
+        color: #000;
+        padding: 10px;
+        border-radius: 0 15px 15px;
+        margin-bottom: 5px;
+        word-break: break-word;
+      }
+
+      .chat-time {
+        color: #666;
+        font-size: 12px;
+      }
+
+      .chat-row-reverse {
+        flex-direction: row-reverse;
+      }
+
+      .chat-row-reverse .chat-box {
+        margin-right: 10px;
+        margin-left: 0;
+      }
+
+      .chat-row-reverse .chat-messages-wrap {
+        border-radius: 15px 0 15px 15px;
+        background: #e9f4ff;
+      }
+
+      .chat-row-reverse .chat-time,
+      .chat-row-reverse .chat-messages-wrap {
+        text-align: right;
+      }
+
+      .comment-controls {
+        display: block;
+        min-width: 60px;
+        margin-bottom: 5px;
+      }
+
+      .btn-edit-comments,
+      .btn-delete-comments {
+        padding: 2px 5px;
+        display: inline-block;
+        font-size: 12px;
+      }
+
+      .chat-row-reverse .comment-controls {
+        text-align: end;
+      }
+    </style>
+  </head>
+  <body class="bg-light py-4">
+    <div class="container" style="max-width: 750px">
+      <div class="card shadow-sm border-0">
+        <div
+          class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center"
+        >
+          <div>
+            <h5 class="mb-0 fw-bold">
+              <i class="bi bi-chat-dots-fill text-primary me-2"></i>Simulador de
+              Chat - Cliente
+            </h5>
+            <small class="text-muted">
+              Chamado ID:
+              <span id="current-ticket-label" class="fw-bold"
+                >{{ ticket_id }}</span
+              >
+              {% if ticket and ticket.status %} | Status:
+              <span
+                class="badge {% if ticket.status == 'Resolvido' %}bg-success{% elif ticket.status == 'Em andamento' %}bg-warning text-dark{% elif ticket.status == 'Aguardando' %}bg-info text-dark{% else %}bg-primary{% endif %}"
+                >{{ ticket.status }}</span
+              >
+              {% endif %}
+            </small>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <a
+              href="{{ url_for('test_chat') }}"
+              class="btn btn-sm btn-outline-primary"
+              title="Iniciar novo chamado com ID automático"
+            >
+              <i class="bi bi-plus-circle me-1"></i>+ Novo Chat
+            </a>
+            <span id="client-status" class="badge bg-secondary"
+              >Conectando...</span
+            >
+          </div>
+        </div>
+
+        <div class="card-body p-3">
+          <div class="chat-container">
+            <div class="chat-inner-wrapper">
+              <div class="chat-inner-body">
+                <div class="chats-wrapper" id="chats-list">
+                  <div class="chat-date" id="chat-today">Hoje</div>
+
+                  {% if messages %} {% for m in messages %}
+                  <div
+                    class="chat-row {% if m.user_id == 'cliente-simulado' or m.user_name == 'Cliente' %}chat-row-reverse{% endif %}"
+                  >
+                    <img
+                      alt="Avatar"
+                      src="https://randomuser.me/api/portraits/{% if m.user_id == 'cliente-simulado' or m.user_name == 'Cliente' %}men/46.jpg{% else %}men/51.jpg{% endif %}"
+                      class="chat-avatar"
+                    />
+                    <div class="chat-box">
+                      <div class="chat-time">
+                        {{ m.user_name or 'Usuário' }}
+                      </div>
+                      <div class="chat-messages-wrap">{{ m.content }}</div>
+                    </div>
+                  </div>
+                  {% endfor %} {% else %}
+                  <div class="text-muted text-center my-5" id="no-chat-prompt">
+                    Nenhuma mensagem neste chamado. Digite algo abaixo para
+                    conversar!
+                  </div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="send-messages-wrapper">
+            <form id="client-form" class="form-group d-flex align-items-center">
+              <textarea
+                id="client-textarea"
+                rows="1"
+                class="form-control type-comment-box"
+                placeholder="Digite sua mensagem de teste..."
+                required
+              ></textarea>
+              <button type="submit" class="btn btn-success">
+                <i class="bi bi-send me-1"></i> Enviar
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUPABASE JS SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+      const SUPABASE_URL = "{{ config['SUPABASE_URL'] or '' }}";
+      const SUPABASE_KEY = "{{ config['SUPABASE_KEY'] or '' }}";
+
+      const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+      const chatsList = document.getElementById("chats-list");
+      const clientForm = document.getElementById("client-form");
+      const clientTextarea = document.getElementById("client-textarea");
+      const clientStatus = document.getElementById("client-status");
+
+      let currentTicketId = "{{ ticket_id or '1' }}";
+      let channel = null;
+
+      function scrollToBottom() {
+        if (chatsList) {
+          setTimeout(() => {
+            chatsList.scrollTop = chatsList.scrollHeight;
+          }, 50);
+        }
+      }
+      window.addEventListener("DOMContentLoaded", scrollToBottom);
+      scrollToBottom();
+
+      function renderMessage(msg) {
+        const prompt = document.getElementById("no-chat-prompt");
+        if (prompt) prompt.remove();
+
+        const isMe =
+          msg.user_id === "cliente-simulado" || msg.user_name === "Cliente";
+        const row = document.createElement("div");
+        row.className = `chat-row ${isMe ? "chat-row-reverse" : ""}`;
+
+        const avatarSrc = isMe
+          ? "https://randomuser.me/api/portraits/men/46.jpg"
+          : "https://randomuser.me/api/portraits/men/51.jpg";
+
+        row.innerHTML = `
+        <img alt="Avatar" src="${avatarSrc}" class="chat-avatar" />
+        <div class="chat-box">
+          <div class="chat-time">${msg.user_name || (isMe ? "Cliente" : "Atendente")}</div>
+          <div class="chat-messages-wrap">${msg.content}</div>
+        </div>
+      `;
+
+        chatsList.appendChild(row);
+        scrollToBottom();
+      }
+
+      function connectBroadcast(tId) {
+        if (!tId) return;
+        if (channel) {
+          supabaseClient.removeChannel(channel);
+        }
+
+        channel = supabaseClient.channel(`room:ticket-${tId}`, {
+          config: { broadcast: { self: true } },
+        });
+
+        channel
+          .on("broadcast", { event: "new_message" }, (payload) => {
+            if (payload && payload.payload) {
+              renderMessage(payload.payload);
+            }
+          })
+          .subscribe((status) => {
+            if (status === "SUBSCRIBED") {
+              clientStatus.className = "badge bg-success";
+              clientStatus.innerText = "Realtime Conectado";
+            } else {
+              clientStatus.className = "badge bg-secondary";
+              clientStatus.innerText = status;
+            }
+          });
+      }
+
+      // Canal global para avisar o Painel de Atendimento sobre novos chats em tempo real
+      const globalChannel = supabaseClient.channel("room:tickets-global");
+      globalChannel.subscribe((status) => {
+        if (status === "SUBSCRIBED") {
+          globalChannel.send({
+            type: "broadcast",
+            event: "new_chat",
+            payload: {
+              id: currentTicketId,
+              subject: "Atendimento #" + currentTicketId,
+              name: "Cliente",
+              status: "Novo",
+            },
+          });
+        }
+      });
+
+      connectBroadcast(currentTicketId);
+
+      clientTextarea.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+          clientForm.dispatchEvent(new Event("submit"));
+        }
+      });
+
+      clientForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const content = clientTextarea.value.trim();
+        if (!content || !currentTicketId) return;
+
+        clientTextarea.value = "";
+
+        const msgPayload = {
+          ticket_id: currentTicketId,
+          user_id: "cliente-simulado",
+          user_name: "Cliente",
+          content: content,
+          created_at: new Date().toISOString(),
+        };
+
+        // 1. Transmite via Realtime Broadcast
+        if (channel) {
+          await channel.send({
+            type: "broadcast",
+            event: "new_message",
+            payload: msgPayload,
+          });
+        }
+
+        // 2. Avisa o painel
+        if (globalChannel) {
+          globalChannel.send({
+            type: "broadcast",
+            event: "ticket_activity",
+            payload: { ticket_id: currentTicketId, content: content },
+          });
+        }
+
+        // 2. Salva no banco
+        fetch("/api/send_message", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(msgPayload),
+        }).catch((err) => console.error("Erro ao salvar:", err));
+      });
+    </script>
+  </body>
+</html>
