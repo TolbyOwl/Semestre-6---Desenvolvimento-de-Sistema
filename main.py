@@ -53,7 +53,7 @@ def set_global_html_variable_values():
 def home():
     if "user" not in session: 
         return redirect(url_for("login"))
-    return render_template('it_dash/dash.html')
+    return redirect(url_for('dash'))
 
 @app.route('/login', methods=["GET","POST"])
 def login():
@@ -336,11 +336,6 @@ def send_message_api():
         pass
     return jsonify({'success': True})
 
-
-@app.route('/tickets/all')
-def all_tickets():
-    tickets= supabase_admin.table('Ticket').select("*").order('created_at', desc=True).execute()
-    return render_template('it_dash/all_tickets.html',tickets=tickets.data)
 
 @app.route('/tickets/all')
 def all_tickets():
