@@ -27,6 +27,7 @@
 
   <section class="row g-3">
     <!-- QUADRO 1 -->
+    {% if sector == "TI" %}
     <div class="col-12 col-lg-3">
       <div class="panel h-100 p-3 border rounded shadow-sm">
         <h2 class="h5 mb-3 section-title d-flex align-items-center justify-content-between">
@@ -58,7 +59,7 @@
         </div>
       </div>
     </div>
-
+    {% endif %}
     <!-- QUADRO 2 -->
     <div class="col-12 col-lg-6">
       <div class="panel h-100 p-3 border rounded shadow-sm d-flex flex-column" style="min-height: 75vh">
@@ -98,6 +99,7 @@
     </div>
 
     <!-- QUADRO 3 -->
+    {% if sector == "TI" %}
     <div class="col-12 col-lg-3">
       <div class="panel h-100 p-3 border rounded shadow-sm">
         <h2 class="h5 mb-3 section-title"><i class="bi bi-sliders me-2"></i><span>Gerenciar</span></h2>
@@ -116,6 +118,7 @@
         {% endif %}
       </div>
     </div>
+    {% endif %}
   </section>
 </div>
 

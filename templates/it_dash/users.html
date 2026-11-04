@@ -88,7 +88,6 @@
             <th scope="col">Time</th>
             <th scope="col">Status</th>
             <th scope="col">Ingressou</th>
-            <th scope="col" class="text-end">Ação</th>
           </tr>
         </thead>
         <tbody>
@@ -100,11 +99,6 @@
           <tr>
             <td>
               <div class="d-flex align-items-center gap-2">
-                <img
-                  class="avatar-img avatar-sm"
-                  src="../assets/images/avatar/avatar-1.jpg"
-                  alt="Sarah Ahmed"
-                />
                 <div>
                   <p class="fw-semibold mb-0">{{ personal.name }}</p>
                   <p class="text-muted small mb-0">{{ personal.email }}</p>
@@ -115,9 +109,6 @@
             <td>{{ personal.sector }}</td>
             <td><span class="badge {{ badge_classes.get(personal.status, 'text-bg-secondary') }}">{{ personal.status }}</span></td>
             <td>{{ personal.started|sao_paulo_datetime }}</td>
-            <td class="text-end">
-              <a class="btn btn-light btn-sm" href="user-details.html">View</a>
-            </td>
           </tr>
           {% endfor %}
         </tbody>

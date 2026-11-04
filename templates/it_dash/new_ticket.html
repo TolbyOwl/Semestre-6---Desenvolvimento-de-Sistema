@@ -28,7 +28,7 @@ block content %}
         <div class="row g-3">
           <div class="col-md-6">
             <label class="form-label" for="formName">Nome completo</label
-            ><input class="form-control" id="formName" name="name" required />
+            ><input class="form-control" id="formName" name="name" value="{% if user_name %}{{ user_name }}{% endif %}" required />
             <div class="invalid-feedback">Nome completo requerido.</div>
           </div>
           <div class="col-md-6">
@@ -38,6 +38,7 @@ block content %}
               id="formEmail"
               type="email"
               name="email"
+              value="{% if user_email %}{{ user_email }}{% endif %}"
               required
             />
             <div class="invalid-feedback">Insira um email valido.</div>
@@ -67,7 +68,7 @@ block content %}
               <option value="" disabled selected>Selecione uma opção</option>
               <option>Baixa</option>
               <option>Normal</option>
-              <option>Serviço intavel</option>
+              <option>Serviço instável</option>
               <option>Urgente</option>
             </select>
 

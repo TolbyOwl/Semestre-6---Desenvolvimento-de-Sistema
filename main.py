@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect,  url_for, session, jsonify
+from flask import Flask, render_template, request, redirect,  url_for, session, jsonify, abort
 from supabase import create_client, Client
 from supabase_auth.errors import AuthError
 from dotenv import load_dotenv
@@ -6,12 +6,14 @@ from datetime import datetime, timezone
 import os
 from zoneinfo import ZoneInfo
 import math
+from functools import wraps
 
 load_dotenv()
 url=os.getenv("SUPABASE_URL")
 key=os.getenv("ANON_KEY")
+service_key=os.getenv("SERVICE_ROLE_KEY")
 
-supabase_admin = create_client(url, os.getenv("SERVICE_ROLE_KEY"))
+supabase_admin = create_client(url,service_key)
 
 app = Flask(__name__)
 app.secret_key = os.getenv("secret_key")  
@@ -47,12 +49,42 @@ def set_global_html_variable_values():
     first_name = user_name.split()[0] if user_name else None
     return {"username": first_name}
 
+@app.context_processor
+def check_sector():
+    user_id=session["user_id"]
+    sector=supabase_admin.auth.admin.get_user_by_id(user_id).user.user_metadata.get("sector")
+    return {"sector": sector}
+
+####### funções auxiliares
+
+def get_user_sector(user_id):
+    user = supabase_admin.auth.admin.get_user_by_id(user_id).user
+    if user:
+        return user.user_metadata.get("sector")
+    return None
+
+def required_sector(*sectors):
+    def decorator(f):
+        @wraps(f)
+        def decorated_function(*args, **kwargs):
+            user_id = session.get("user_id")
+            if not user_id:
+                return redirect(url_for("login"))
+            user_sector = get_user_sector(user_id)
+            if user_sector not in sectors:
+                abort(403)
+            return f(*args, **kwargs)
+        return decorated_function
+    return decorator
+
 #Páginas de login
 
 @app.route ('/')
 def home():
     if "user" not in session: 
         return redirect(url_for("login"))
+    if get_user_sector(session["user_id"]) != "TI":
+        return redirect(url_for("all_tickets"))
     return redirect(url_for('dash'))
 
 @app.route('/login', methods=["GET","POST"])
@@ -156,9 +188,8 @@ def logout():
 #Páginas da Dashboard (pós-login apenas)
 
 @app.route('/users')
+@required_sector("TI")
 def users(requested_page=None):
-    if "user" not in session: 
-        return redirect(url_for("login"))
     count_response = supabase_admin.rpc("get_total_auth_users").execute()
     total_users = count_response.data 
 
@@ -188,9 +219,8 @@ def users(requested_page=None):
     return render_template('it_dash/users.html', personals=personals,request_page=requested_page,total_pages=total_pages)
 
 @app.route('/dash')
+@required_sector("TI")
 def dash():
-    if "user" not in session: 
-        return redirect(url_for("login"))
     tickets_count = supabase_admin.table('Ticket').select("status").execute()
     print(tickets_count.data)
     count_tickets = {
@@ -212,9 +242,8 @@ def dash():
     return render_template('it_dash/dash.html', count_tickets=count_tickets, count_active_users=count_active_users,recent_tickets=recent_tickets.data)
 
 @app.route('/tickets')
+@required_sector("TI")
 def tickets():
-    if "user" not in session: 
-        return redirect(url_for("login"))
     row_limit=3
     new=supabase_admin.table('Ticket').select("*").eq("status","Novo").order('created_at', desc=True).limit(row_limit).execute()
     in_progress=supabase_admin.table('Ticket').select("*").eq("status","Em andamento").order('created_at', desc=True).limit(row_limit).execute()
@@ -239,7 +268,11 @@ def new_ticket():
                 )
         print(insert_data)
         ticket_id=insert_data.data[0].get("id")
+        if get_user_sector(session["user_id"]) != "IT":
+            return redirect(url_for("all_tickets"))
         return redirect(url_for("ticket",id=ticket_id))
+    if get_user_sector(session["user_id"]) != "IT":
+        return render_template('it_dash/new_ticket.html',user_name=session["user_name"],user_email=session["user"])
     return render_template('it_dash/new_ticket.html')
 
 @app.route('/tickets/<id>')
@@ -339,19 +372,23 @@ def send_message_api():
 
 @app.route('/tickets/all')
 def all_tickets():
-    tickets= supabase_admin.table('Ticket').select("*").order('created_at', desc=True).execute()
+    sector_check = get_user_sector(session["user_id"])
+    if sector_check == "TI":
+        tickets= supabase_admin.table('Ticket').select("*").order('created_at', desc=True).execute()
+    else:
+        tickets= supabase_admin.table('Ticket').select("*").eq("email", session["user"]).order('created_at', desc=True).execute()
     return render_template('it_dash/all_tickets.html',tickets=tickets.data)
 
 #Base de conhecimento
 
 @app.route('/documents')
+@required_sector("TI")
 def documents():
-    if "user" not in session: 
-        return redirect(url_for("login"))
     documents_data=supabase_admin.table('Documentacao').select("*").execute()
     return render_template('it_dash/documents.html',documents=documents_data.data)
 
 @app.route('/new_document', methods=["GET","POST"])
+@required_sector("TI")
 def new_document():
     if "user" not in session: 
         return redirect(url_for("login"))
@@ -368,6 +405,7 @@ def new_document():
     return render_template('it_dash/new_document.html')
 
 @app.route('/documents/<id>', methods=["GET","POST"])
+@required_sector("TI")
 def document(id):
     if "user" not in session: 
         return redirect(url_for("login"))
@@ -385,6 +423,7 @@ def document(id):
     return render_template('it_dash/open_document.html',document=response.data)
 
 @app.route('/documents/<id>/delete', methods=['POST'])
+@required_sector("TI")
 def delete_document(id):
     if "user" not in session: 
         return redirect(url_for("login"))
@@ -440,12 +479,14 @@ def change_password():
 def page_not_found(e):
     return render_template('errors/404.html'), 404
 
+@app.errorhandler(403)
+def forbidden(e):
+    return render_template('errors/403.html'), 403
 
 #Para testes
 @app.route('/teste')
 def teste():
     return render_template('errors/500.html')
-
 
 #Execução
 if __name__ == '__main__':

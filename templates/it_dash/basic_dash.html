@@ -36,8 +36,10 @@
           </span>
         </a>
       </div>
-
+      
       <nav class="sidebar-nav">
+
+        {% if sector== "TI" %}
         <div class="nav-section-title">MENU PRINCIPAL</div>
         <a class="nav-link {% if request.endpoint == 'dash' %}active{% endif %}"
            href="{{url_for("dash")}}"
@@ -52,16 +54,18 @@
           <span class="nav-icon"><i class="bi bi-people" aria-hidden="true"></i></span>
           <span class="nav-text">Usuários</span>
         </a>
+        {% endif %}
 
           <a class="nav-link {% if request.endpoint in ['tickets', 'new_ticket'] %}active{% endif %}"
-           href="{{url_for("tickets")}}"
+           {% if sector== "IT" %}href="{{url_for("tickets")}}" {% endif %}
+           {% if sector!= "IT" %}href="{{url_for("all_tickets")}}" {% endif %}
            {% if request.endpoint in ['tickets', 'new_ticket'] %}aria-current="page"{% endif %}>
           <span class="nav-icon"><i class="bi bi-table" aria-hidden="true"></i></span>
           <span class="nav-text">Tickets</span>
         </a>
 
         
-         
+         {% if sector== "TI" %}
          <div class="nav-section-title">WORKSPACE</div>
         <a class="nav-link{% if request.endpoint in ['documents', 'new_document'] %} active {% endif %}"
            href="{{url_for("documents")}}"
@@ -71,7 +75,8 @@
         </a>
    
 
-        
+        {% endif %}
+
         <a class="nav-link {% if request.endpoint in ['config'] %} active {% endif %}"
            href="{{url_for("config")}}"
            {% if request.endpoint in ['config'] %}aria-current="page"{% endif %}>
