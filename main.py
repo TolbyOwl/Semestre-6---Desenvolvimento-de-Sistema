@@ -51,9 +51,11 @@ def set_global_html_variable_values():
 
 @app.context_processor
 def check_sector():
-    user_id=session["user_id"]
-    sector=supabase_admin.auth.admin.get_user_by_id(user_id).user.user_metadata.get("sector")
-    return {"sector": sector}
+    if "user_id" in session:
+        user_id = session["user_id"]
+        sector = supabase_admin.auth.admin.get_user_by_id(user_id).user.user_metadata.get("sector")
+        return {"sector": sector}
+    return {"sector": None}
 
 ####### funções auxiliares
 
