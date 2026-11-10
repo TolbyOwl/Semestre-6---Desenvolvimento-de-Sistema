@@ -105,7 +105,7 @@ def login():
             session["user_id"] = response.user.id
             session["user_name"] = response.user.user_metadata.get("name")
     if "user" in session: 
-        return redirect(url_for("dash"))
+        return redirect(url_for("home"))
     return render_template('session/login.html')
 
 @app.route('/forgot_password', methods=["GET","POST"])
