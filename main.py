@@ -8,6 +8,9 @@ from zoneinfo import ZoneInfo
 import math
 from functools import wraps
 
+
+## Configurações do Flask e Supabase (inclusive variáveis de ambiente) ##
+
 load_dotenv()
 url=os.getenv("SUPABASE_URL")
 key=os.getenv("ANON_KEY")
@@ -21,7 +24,7 @@ app.config['SUPABASE_URL'] = url
 app.config['SUPABASE_KEY'] = key
 
 
-#Variaveis globais
+##Variaveis globais, Filtros e processadores de contexto ##
 
 SAO_PAULO_TIMEZONE = ZoneInfo("America/Sao_Paulo")
 
@@ -57,7 +60,7 @@ def check_sector():
         return {"sector": sector}
     return {"sector": None}
 
-####### funções auxiliares
+####### funções auxiliares (Que se repetem em várias rotas ou decorators) ########
 
 def get_user_sector(user_id):
     user = supabase_admin.auth.admin.get_user_by_id(user_id).user
@@ -79,7 +82,7 @@ def required_sector(*sectors):
         return decorated_function
     return decorator
 
-#Páginas de login
+## Páginas de login - Compartilham base da "Basic Session" ##
 
 @app.route ('/')
 def home():
@@ -187,7 +190,7 @@ def logout():
     session.pop("user", None)
     return redirect(url_for("login"))
 
-#Páginas da Dashboard (pós-login apenas)
+## Páginas da Dashboard (pós-login apenas) - Compartilham a base da "Basic Dash" ##
 
 @app.route('/users')
 @required_sector("TI")
@@ -276,6 +279,8 @@ def new_ticket():
     if get_user_sector(session["user_id"]) != "IT":
         return render_template('it_dash/new_ticket.html',user_name=session["user_name"],user_email=session["user"])
     return render_template('it_dash/new_ticket.html')
+
+## Gestão de Tickets e Chat ao vivo ##
 
 @app.route('/tickets/<id>')
 def ticket(id):
@@ -381,7 +386,7 @@ def all_tickets():
         tickets= supabase_admin.table('Ticket').select("*").eq("email", session["user"]).order('created_at', desc=True).execute()
     return render_template('it_dash/all_tickets.html',tickets=tickets.data)
 
-#Base de conhecimento
+## Base de conhecimento ##
 
 @app.route('/documents')
 @required_sector("TI")
