@@ -1,6 +1,6 @@
 # Sistema de Chamados de TI (Helpdesk)
 
-Projeto desenvolvido para a matéria de Desenvolvimento de Sistemas (6º Semestre).
+Projeto desenvolvido para a matéria de Projeto de Extensão em Desenvolvimento de Sistemas (6º Semestre).
 
 O objetivo do sistema é facilitar o suporte técnico interno, permitindo que usuários abram chamados para relatar problemas ou dúvidas e que a equipe de TI faça o gerenciamento, acompanhamento de status e troca de mensagens sobre cada ticket.
 
