@@ -48,7 +48,7 @@ python -m venv .venv
 ### 3. Instalar as dependências
 
 ```bash
-pip install flask supabase python-dotenv
+pip install requirements.txt
 ```
 
 ### 4. Configurar as variáveis de ambiente
@@ -61,6 +61,7 @@ SERVICE_ROLE_KEY="sua-service-role-key"
 ANON_KEY="sua-anon-key"
 secret_key="sua-chave-secreta-flask"
 ```
+Autorizar injection do .env nas configurações (VS Code)
 
 ### 5. Rodar a aplicação
 
