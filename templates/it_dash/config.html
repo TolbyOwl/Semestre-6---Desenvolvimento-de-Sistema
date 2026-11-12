@@ -98,88 +98,6 @@
         </form>
       </div>
 
-      <!-- Notificações -->
-      <div class="col-12 col-xl-6">
-        <div class="panel h-100">
-          <div class="panel-header">
-            <div>
-              <h2 class="h5 mb-1 section-title">
-                <i class="bi bi-bell" aria-hidden="true"></i>
-                <span>Notificações</span>
-              </h2>
-
-              <p class="text-muted mb-0">
-                Gerencie como deseja receber os avisos do UniDesk.
-              </p>
-            </div>
-          </div>
-
-          <div class="settings-list">
-            <!-- Atualização de chamado -->
-            <label class="settings-row">
-              <span>
-                <strong>Atualizações de chamados</strong>
-                <small>
-                  Receba uma notificação quando um chamado for atualizado.
-                </small>
-              </span>
-
-              <input class="form-check-input" type="checkbox" checked />
-            </label>
-            <!-- Chamado atribuído -->
-            <label class="settings-row">
-              <span>
-                <strong>Chamado atribuído</strong>
-                <small>
-                  Seja avisado quando um chamado for atribuído a você.
-                </small>
-              </span>
-
-              <input class="form-check-input" type="checkbox" checked />
-            </label>
-            <!-- Mensagens -->
-            <label class="settings-row">
-              <span>
-                <strong>Novas mensagens</strong>
-                <small>
-                  Receba avisos quando houver uma nova mensagem em seus
-                  chamados.
-                </small>
-              </span>
-
-              <input class="form-check-input" type="checkbox" checked />
-            </label>
-            <!-- Alteração de status -->
-            <label class="settings-row">
-              <span>
-                <strong>Alteração de status</strong>
-                <small>
-                  Receba notificações quando o status de um chamado mudar.
-                </small>
-              </span>
-
-              <input class="form-check-input" type="checkbox" checked />
-            </label>
-            <!-- Notificações por e-mail -->
-            <label class="settings-row">
-              <span>
-                <strong>Notificações por e-mail</strong>
-                <small>
-                  Receba atualizações dos seus chamados diretamente por e-mail.
-                </small>
-              </span>
-
-              <input class="form-check-input" type="checkbox" />
-            </label>
-          </div>
-        </div>
-      </div>
-      
-    </section>
-
-    <!-- Coluna de baixo -->
-    <section class="row g-3 mt-3 justify-content-center">
-      <!-- Senhas -->
       <div class="col-12 col-xl-6">
         <form id="passwordChange" class="panel needs-validation" action="{{ url_for('change_password') }}" method="post">
           <div class="panel-header">
@@ -253,6 +171,7 @@
           </div>
         </form>
       </div>
+      
     </section>
   </div>
 </main>

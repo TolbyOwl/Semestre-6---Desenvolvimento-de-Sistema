@@ -276,7 +276,7 @@ def new_ticket():
         if get_user_sector(session["user_id"]) != "IT":
             return redirect(url_for("all_tickets"))
         return redirect(url_for("ticket",id=ticket_id))
-    if get_user_sector(session["user_id"]) != "IT":
+    if get_user_sector(session["user_id"]) != "TI":
         return render_template('it_dash/new_ticket.html',user_name=session["user_name"],user_email=session["user"])
     return render_template('it_dash/new_ticket.html')
 

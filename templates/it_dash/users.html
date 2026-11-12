@@ -84,7 +84,6 @@
         <thead>
           <tr>
             <th scope="col">Usuário</th>
-            <th scope="col">Função</th>
             <th scope="col">Time</th>
             <th scope="col">Status</th>
             <th scope="col">Ingressou</th>
@@ -105,7 +104,6 @@
                 </div>
               </div>
             </td>
-            <td>PENDENTE!!!!</td>
             <td>{{ personal.sector }}</td>
             <td><span class="badge {{ badge_classes.get(personal.status, 'text-bg-secondary') }}">{{ personal.status }}</span></td>
             <td>{{ personal.started|sao_paulo_datetime }}</td>
